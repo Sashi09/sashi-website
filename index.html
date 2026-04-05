@@ -23,14 +23,14 @@
             flex-direction: column;
             align-items: center;
             min-height: 100vh;
-            overflow-x: hidden; /* Prevents side-scrolling during PDF capture */
+            overflow-x: hidden;
         }
 
         .container {
             width: 90%;
             max-width: 1000px;
             padding: 40px 20px;
-            z-index: 1; /* Keeps UI above the hidden cert layer */
+            z-index: 1;
         }
 
         header { text-align: center; margin-bottom: 40px; }
@@ -114,69 +114,83 @@
 
         button:hover { filter: brightness(1.1); transform: scale(1.02); }
 
-        /* RECTIFIED CERTIFICATE: CAPTURE LAYER */
+        /* HIDDEN CAPTURE LAYER FOR PDF */
         #cert-container-hidden {
             position: absolute;
-            top: -5000px; /* Moves way off screen so it doesn't shift the UI */
+            top: -10000px;
             left: 0;
-            width: 900px; 
-            height: 600px;
-            z-index: -1; /* Placed behind the main UI */
-            pointer-events: none; /* User can't interact with it */
+            width: 900px;
+            z-index: -1;
         }
 
         #pdf-wrap {
             width: 900px;
             height: 600px;
             background: white;
-            padding: 0px;
+            padding: 20px;
             box-sizing: border-box;
         }
 
-        #pdf-content {
-            border: 15px double #1e293b;
+        #pdf-content-inner {
+            border: 2px solid #1e293b;
+            padding: 5px;
             height: 100%;
             width: 100%;
+            box-sizing: border-box;
+        }
+
+        #pdf-border-main {
+            border: 4px solid #1e293b;
+            height: 100%;
+            width: 100%;
+            padding: 40px;
+            box-sizing: border-box;
+            position: relative;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            text-align: center;
             color: #1e293b;
-            padding: 40px;
-            box-sizing: border-box;
+            text-align: center;
         }
 
-        .c-title { font-size: 42px; font-weight: 800; margin: 0; color: #0f172a; }
-        .c-sub { letter-spacing: 3px; font-size: 14px; color: #64748b; margin-bottom: 35px; text-transform: uppercase; }
+        /* Decorative Corners */
+        .corner-tl { position: absolute; top: 10px; left: 10px; width: 40px; height: 40px; border-top: 4px solid #eab308; border-left: 4px solid #eab308; }
+        .corner-br { position: absolute; bottom: 10px; right: 10px; width: 40px; height: 40px; border-bottom: 4px solid #eab308; border-right: 4px solid #eab308; }
+
         .c-name { 
             font-family: 'Dancing Script', cursive; 
-            font-size: 56px; 
-            margin: 10px 0 35px;
-            border-bottom: 2px solid #e2e8f0;
-            min-width: 350px;
-            padding: 0 30px;
+            font-size: 60px; 
+            color: #1e293b; 
+            border-bottom: 1px solid #cbd5e1; 
+            min-width: 450px; 
+            margin: 10px 0 20px;
         }
-        .c-metrics {
+
+        .c-metrics-box {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             gap: 20px;
             background: #f1f5f9;
             padding: 20px;
-            border-radius: 12px;
-            margin: 0 60px 35px;
-            width: 80%;
+            border-radius: 10px;
+            width: 85%;
+            margin-bottom: 30px;
         }
-        .m-val { font-size: 32px; font-weight: 800; color: #1e293b; }
-        .m-lbl { font-size: 11px; text-transform: uppercase; color: #64748b; margin-top: 3px;}
-        
-        .c-footer {
-            width: 80%;
+
+        .seal {
+            width: 85px;
+            height: 85px;
+            background: #eab308;
+            border-radius: 50%;
             display: flex;
-            justify-content: space-between;
-            font-size: 12px;
-            color: #94a3b8;
-            padding: 0 60px;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 800;
+            font-size: 10px;
+            box-shadow: 0 0 0 4px rgba(234, 179, 8, 0.2);
+            transform: rotate(-15deg);
         }
     </style>
 </head>
@@ -213,22 +227,39 @@
 
 <div id="cert-container-hidden">
     <div id="pdf-wrap">
-        <div id="pdf-content">
-            <h1 class="c-title">CERTIFICATE OF COMPETENCY</h1>
-            <p class="c-sub">OFFICIAL PERFORMANCE RECORD</p>
-            <p>This document certifies that</p>
-            <div class="c-name" id="display-name">Sashi Poorna Sivani</div>
-            <p>has demonstrated professional proficiency in standardized evaluation.</p>
-            
-            <div class="c-metrics">
-                <div><div class="m-val" id="cert-wpm">0</div><div class="m-lbl">WPM</div></div>
-                <div><div class="m-val" id="cert-acc">0%</div><div class="m-lbl">Accuracy</div></div>
-                <div><div class="m-val" id="cert-tier">N/A</div><div class="m-lbl">Tier</div></div>
-            </div>
-            
-            <div class="c-footer">
-                <div>REF ID: SV-777484</div>
-                <div>VERIFIED BY SASHI COMPUTER INSTITUTE</div>
+        <div id="pdf-content-inner">
+            <div id="pdf-border-main">
+                <div class="corner-tl"></div>
+                <div class="corner-br"></div>
+
+                <div style="text-align: right; width: 100%; font-size: 10px; color: #64748b; margin-bottom: 5px;">REF ID: SV-365180</div>
+                
+                <h1 style="font-size: 46px; font-weight: 800; margin: 0; letter-spacing: 2px;">CERTIFICATE OF COMPETENCY</h1>
+                <p style="letter-spacing: 4px; font-size: 13px; color: #eab308; margin-bottom: 25px; font-weight: 600;">OFFICIAL PERFORMANCE RECORD</p>
+                
+                <p style="margin: 0; color: #64748b;">This document certifies that</p>
+                <div class="c-name" id="display-name">Candidate Name</div>
+                <p style="color: #64748b; font-size: 14px; margin-bottom: 25px;">has demonstrated professional proficiency in standardized evaluation.</p>
+                
+                <div class="c-metrics-box">
+                    <div><div style="font-size: 10px; color: #94a3b8; text-transform: uppercase;">Words Per Minute</div><div style="font-size: 32px; font-weight: 800;" id="cert-wpm">0</div></div>
+                    <div><div style="font-size: 10px; color: #94a3b8; text-transform: uppercase;">Accuracy Rate</div><div style="font-size: 32px; font-weight: 800;" id="cert-acc">0%</div></div>
+                    <div><div style="font-size: 10px; color: #94a3b8; text-transform: uppercase;">Skill Tier</div><div style="font-size: 32px; font-weight: 800;" id="cert-tier">N/A</div></div>
+                </div>
+                
+                <div style="display: flex; justify-content: space-between; align-items: center; width: 95%;">
+                    <div style="text-align: center; width: 200px;">
+                        <div style="font-family: 'Dancing Script', cursive; font-size: 24px;">K.Sivani</div>
+                        <div style="border-top: 2px solid #1e293b; margin-top: 5px; padding-top: 5px; font-size: 10px; font-weight: 800; color: #eab308; text-transform: uppercase;">Project Architect</div>
+                    </div>
+
+                    <div class="seal">DATA<br>VERIFIED</div>
+
+                    <div style="text-align: center; width: 200px;">
+                        <div style="font-size: 18px; font-weight: 700;" id="cert-date">--/--/----</div>
+                        <div style="border-top: 2px solid #1e293b; margin-top: 10px; padding-top: 5px; font-size: 10px; font-weight: 800; color: #64748b; text-transform: uppercase;">Issuance Date</div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -288,9 +319,11 @@
 
         if(charIndex < characters.length && timeLeft > 0) {
             if(typedChar == null) {
-                charIndex--;
-                if(characters[charIndex].classList.contains('incorrect')) mistakes--;
-                characters[charIndex].classList.remove('correct', 'incorrect');
+                if(charIndex > 0) {
+                    charIndex--;
+                    if(characters[charIndex].classList.contains('incorrect')) mistakes--;
+                    characters[charIndex].classList.remove('correct', 'incorrect');
+                }
             } else {
                 if(characters[charIndex].innerText === typedChar) {
                     characters[charIndex].classList.add('correct');
@@ -314,11 +347,12 @@
         let finalWPM = parseInt(wpmDisplay.innerText);
         if(finalWPM > bestWPM) { bestWPM = finalWPM; document.getElementById('best-wpm').innerText = bestWPM; }
         
-        if(finalWPM > 10) {
+        if(finalWPM >= 0) {
             downloadBtn.style.display = 'inline-block';
             document.getElementById('cert-wpm').innerText = finalWPM;
             document.getElementById('cert-acc').innerText = accDisplay.innerText;
-            document.getElementById('cert-tier').innerText = finalWPM > 60 ? "Elite" : finalWPM > 40 ? "Professional" : "Intermediate";
+            document.getElementById('cert-tier').innerText = finalWPM > 60 ? "ELITE" : finalWPM > 40 ? "PROFESSIONAL" : "INTERMEDIATE";
+            document.getElementById('cert-date').innerText = new Date().toLocaleDateString();
         }
     }
 
@@ -326,21 +360,16 @@
         const candidateName = document.getElementById('user-name').value || "Sashi Poorna Sivani";
         document.getElementById('display-name').innerText = candidateName;
         
-        // Use the hidden capture layer
         const element = document.getElementById('pdf-wrap');
-        
         const opt = { 
             margin: 0, 
-            filename: `Sashi_Cert_${candidateName.replace(/\s+/g, '_')}.pdf`, 
+            filename: `Typing_Cert_${candidateName.replace(/\s+/g, '_')}.pdf`, 
             image: { type: 'jpeg', quality: 0.98 },
-            html2canvas: { scale: 2, useCORS: true }, 
+            html2canvas: { scale: 3, useCORS: true, letterRendering: true }, 
             jsPDF: { orientation: 'landscape', unit: 'px', format: [900, 600] }
         };
-        
-        // Generate the PDF directly from the hidden element
         html2pdf().from(element).set(opt).save();
     }
 </script>
-
 </body>
 </html>
