@@ -3,322 +3,377 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <meta name="google-site-verification" content="gIr3_BkkY8XvRLl_n5wVyZizAfjnnSgLXlVduM1ckJM" />
+    
     <title>Sashi's Typing Analyzer - Executive Edition</title>
+    
+    <meta name="author" content="Katakam Sashi Poorna Sivani">
+    <meta name="description" content="A professional performance analyzer for typing speed and accuracy with certified results.">
+    <meta property="og:title" content="Sashi's Typing Analyzer - Executive Edition">
+    <meta property="og:description" content="Test your typing speed and generate a professional competency certificate.">
+    <meta property="og:url" content="https://sashi-website.vercel.app">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="https://sashi-website.vercel.app/logo.png">
+    
+    <link rel="icon" type="image/png" href="logo.png">
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;800&family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
+    
     <style>
         :root {
-            --bg: #0f172a;
-            --card: #1e293b;
-            --accent: #38bdf8;
-            --text: #f8fafc;
+            --bg-dark: #0d1117; --card-bg: #161b22; --accent-glow: #58a6ff;
+            --text-main: #c9d1d9; --text-muted: #8b949e; --success: #3fb950;
+            --gold: #d4af37; --slate: #1e293b; --error-red: #f85149;
         }
-
         body {
-            background-color: var(--bg);
-            color: var(--text);
-            font-family: 'Inter', sans-serif;
-            margin: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            min-height: 100vh;
-            overflow-x: hidden; /* Prevents side-scrolling from hidden elements */
+            background-color: var(--bg-dark); color: var(--text-main);
+            font-family: 'Inter', sans-serif; margin: 0; padding: 0; min-height: 100vh;
+            display: flex; justify-content: center; align-items: center;
         }
-
-        .container {
-            width: 95%;
-            max-width: 850px;
-            padding: 40px 20px;
-            z-index: 1;
+        .main-layout { width: 95%; max-width: 1000px; padding: 20px; }
+        .project-box {
+            background: var(--card-bg); border: 1px solid #30363d;
+            border-radius: 16px; padding: 35px; box-shadow: 0 20px 50px rgba(0,0,0,0.6);
         }
-
-        header { text-align: center; margin-bottom: 30px; }
         
+        /* HEADER & LOGO */
+        .header-container {
+            display: flex; flex-direction: column; align-items: center; margin-bottom: 30px;
+        }
         .logo-circle {
-            width: 70px;
-            height: 70px;
-            border: 3px solid var(--accent);
-            border-radius: 50%;
-            margin: 0 auto 15px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 28px;
-            font-weight: 800;
-            color: var(--accent);
-            box-shadow: 0 0 20px rgba(56, 189, 248, 0.15);
+            width: 80px; height: 80px; border-radius: 50%; border: 2px solid var(--accent-glow);
+            display: flex; align-items: center; justify-content: center; overflow: hidden;
+            margin-bottom: 15px; background: var(--bg-dark); box-shadow: 0 0 15px rgba(88, 166, 255, 0.2);
+        }
+        .brand-logo { width: 100%; height: 100%; object-fit: cover; }
+        .title-glow { text-align: center; color: var(--accent-glow); text-transform: uppercase; letter-spacing: 2px; margin: 0; }
+
+        /* CONTROLS */
+        .setup-row { display: flex; gap: 15px; margin-bottom: 25px; margin-top: 25px; }
+        .custom-select { 
+             background: var(--bg-dark); color: var(--accent-glow); 
+             border: 1px solid #333; padding: 12px; border-radius: 10px; 
+             flex: 1; cursor: pointer; font-weight: 600;
         }
 
-        h1 { letter-spacing: 3px; font-size: 24px; margin: 0; color: var(--accent); }
+        /* STATS */
+        .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 25px; }
+        .stat-box { background: var(--bg-dark); padding: 15px; border-radius: 12px; text-align: center; border: 1px solid #333; }
+        .stat-box label { display: block; font-size: 10px; color: var(--text-muted); text-transform: uppercase; }
+        .stat-box span { font-size: 24px; font-weight: 800; color: var(--accent-glow); }
 
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 15px;
-            margin-bottom: 25px;
+        /* ANALYSIS AREA - Responsive */
+        .analysis-section { display: flex; gap: 20px; margin-bottom: 25px; height: 220px;}
+        .chart-box { flex: 2; background: var(--bg-dark); border: 1px solid #30363d; border-radius: 12px; padding: 15px; min-height: 180px; }
+        .leaderboard-box { flex: 1; background: var(--bg-dark); border: 1px solid #30363d; border-radius: 12px; padding: 15px; overflow-y: auto;}
+
+        @media (max-width: 768px) {
+            .setup-row { flex-direction: column; }
+            .stats-grid { grid-template-columns: 1fr 1fr; }
+            .analysis-section { flex-direction: column; height: auto; }
+            .chart-box { height: 200px; }
         }
 
-        .stat-card {
-            background: var(--card);
-            padding: 15px;
-            border-radius: 12px;
-            text-align: center;
-            border: 1px solid rgba(255,255,255,0.05);
+        /* TYPING AREA */
+        #display-area { 
+             background: #000; padding: 25px; border-radius: 12px; font-size: 22px; 
+             min-height: 50px; margin-bottom: 15px; border-left: 4px solid var(--accent-glow); line-height: 1.6;
+            word-wrap: break-word;
         }
-
-        .stat-label { font-size: 11px; color: #94a3b8; text-transform: uppercase; }
-        .stat-value { font-size: 26px; font-weight: 800; color: var(--accent); margin-top: 5px; }
-
-        .typing-area {
-            background: var(--card);
-            padding: 35px;
-            border-radius: 16px;
-            margin-bottom: 25px;
-            min-height: 100px;
-            font-size: 22px;
-            line-height: 1.6;
-            color: #94a3b8;
-            position: relative;
-            box-shadow: inset 0 2px 10px rgba(0,0,0,0.2);
-        }
-
-        #input-field {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            opacity: 0; cursor: default;
-        }
-
-        .current-char { background: var(--accent); color: var(--bg); border-radius: 2px; }
-        .correct { color: var(--text); }
-        .incorrect { color: #ef4444; text-decoration: underline; }
-
-        .controls { display: flex; flex-wrap: wrap; gap: 15px; justify-content: center; }
+        .success { color: var(--success); }
+        .fail { color: var(--error-red); background: rgba(248, 81, 73, 0.1); }
         
-        select, input[type="text"], button {
-            background: var(--card);
-            color: var(--text);
-            border: 1px solid #334155;
-            padding: 12px 18px;
-            border-radius: 8px;
-            font-size: 14px;
+        .type-input {
+            width: 100%; height: 100px; background: var(--bg-dark); border: 2px solid #333;
+            color: white; padding: 15px; border-radius: 12px; font-size: 18px; resize: none; 
+            outline: none; box-sizing: border-box; transition: border-color 0.2s;
+        }
+        .type-input.input-error { border-color: var(--error-red); animation: shake 0.2s ease-in-out; }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-4px); }
+            75% { transform: translateX(4px); }
         }
 
-        button {
-            background: var(--accent);
-            color: var(--bg);
-            font-weight: 700;
-            cursor: pointer;
-            border: none;
-            transition: all 0.2s;
+        /* ACTIONS */
+        #action-area { text-align: center; margin-top: 25px; }
+        .developer-tag { font-size: 12px; color: var(--text-muted); margin-bottom: 10px; }
+        .developer-tag span { color: var(--accent-glow); font-weight: bold; }
+        .btn { padding: 14px 30px; border-radius: 8px; border: none; font-weight: 700; cursor: pointer; transition: 0.3s; }
+        .btn:hover { opacity: 0.8; transform: translateY(-2px); }
+        .download-btn { background: var(--gold); color: #000; margin-bottom: 15px; }
+        .restart-btn { background: #333; color: white; }
+        .name-input-glow {
+            display: block; margin: 15px auto; width: 320px; padding: 12px; background: #161b22;
+            border: 1px solid var(--gold); color: white; border-radius: 8px; text-align: center;
         }
 
-        button:hover { filter: brightness(1.1); transform: scale(1.02); }
-
-        /* RECTIFIED CERTIFICATE: ABSOLUTELY ISOLATED */
-        #cert-container-hidden {
-            position: absolute;
-            top: -5000px; /* Way off screen */
-            left: 0;
-            width: 900px; 
-            height: 600px;
-            pointer-events: none;
-        }
-
-        #pdf-wrap {
-            width: 900px;
-            height: 600px;
-            background: white;
-            padding: 30px;
-            box-sizing: border-box;
-        }
-
+        /* CERTIFICATE PDF PANEL */
+        .certificate-panel { display: none; }
+        #pdf-wrap { background: #f8fafc; padding: 40px; width: 980px; height: 700px; box-sizing: border-box; }
         #pdf-content {
-            border: 12px double #1e293b;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            color: #1e293b;
+            background: #ffffff; color: #1e293b; padding: 40px; 
+            border: 12px double #1e293b; 
+            width: 900px; height: 620px; position: relative; margin: 0 auto; box-sizing: border-box; border-radius: 4px;
         }
-
-        .c-title { font-size: 40px; font-weight: 800; margin: 0; }
-        .c-sub { letter-spacing: 4px; font-size: 14px; color: #64748b; margin-bottom: 30px; }
-        .c-name { 
-            font-family: 'Dancing Script', cursive; 
-            font-size: 52px; 
-            margin: 15px 0;
-            border-bottom: 2px solid #e2e8f0;
-            min-width: 400px;
-        }
-        .c-metrics {
-            display: flex;
-            gap: 40px;
-            background: #f1f5f9;
-            padding: 20px 40px;
-            border-radius: 10px;
-            margin-top: 30px;
-        }
-        .m-box span { display: block; }
-        .m-val { font-size: 28px; font-weight: 800; }
-        .m-lbl { font-size: 11px; text-transform: uppercase; color: #64748b; }
+        .ref-id-label { position: absolute; top: 25px; right: 35px; font-family: monospace; font-size: 12px; color: #64748b; }
+        .cert-border-decoration { position: absolute; width: 60px; height: 60px; border: 4px solid var(--gold); z-index: 10; }
+        .top-left { top: 15px; left: 15px; border-right: none; border-bottom: none; }
+        .bottom-right { bottom: 15px; right: 15px; border-left: none; border-top: none; }
+        .cert-header { text-align: center; }
+        .cert-header h1 { font-size: 40px; color: #0f172a; margin: 0; letter-spacing: 2px; text-transform: uppercase; font-weight: 800; }
+        .cert-header p { font-size: 14px; letter-spacing: 4px; color: var(--gold); font-weight: bold; margin-top: 5px; text-transform: uppercase; }
+        .cert-body { text-align: center; margin-top: 30px; }
+        .statement { font-size: 16px; color: #64748b; margin: 5px 0; }
+        .cert-name-display { font-family: 'Dancing Script', cursive; font-size: 54px; color: #0f172a; margin: 10px auto; display: block; border-bottom: 2px solid #e2e8f0; width: fit-content; padding: 0 60px; }
+        .cert-metrics { display: grid; grid-template-columns: 1fr 1fr 1fr; background: #f1f5f9; padding: 20px; border-radius: 12px; margin: 30px 60px 0 60px; }
+        .metric { text-align: center; }
+        .metric .m-label { font-size: 11px; color: #94a3b8; text-transform: uppercase; font-weight: 800; margin-bottom: 5px; }
+        .metric .m-value { font-size: 34px; font-weight: 800; color: #1e293b; margin: 0; }
+        .cert-footer { position: absolute; bottom: 50px; left: 70px; right: 70px; display: flex; justify-content: space-between; align-items: flex-end; }
+        .signature-box { width: 220px; text-align: center; }
+        .sig-line { border-top: 2px solid #1e293b; margin-top: 8px; padding-top: 4px; }
+        .sig-title { font-size: 11px; font-weight: 800; text-transform: uppercase; margin: 0; }
+        .badge-verified { width: 85px; height: 85px; background: var(--gold); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 12px; color: #fff; border: 4px double #fff; text-align: center; transform: rotate(-10deg); box-shadow: 0 4px 15px rgba(212, 175, 55, 0.4); }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <header>
-        <div class="logo-circle">S</div>
-        <h1>PERFORMANCE ANALYZER</h1>
-    </header>
-
-    <div class="stats-grid">
-        <div class="stat-card"><div class="stat-label">Time</div><div class="stat-value" id="timer">60s</div></div>
-        <div class="stat-card"><div class="stat-label">WPM</div><div class="stat-value" id="wpm">0</div></div>
-        <div class="stat-card"><div class="stat-label">Acc</div><div class="stat-value" id="accuracy">0%</div></div>
-        <div class="stat-card"><div class="stat-label">Best</div><div class="stat-value" id="best-wpm">0</div></div>
-    </div>
-
-    <div class="typing-area" id="quote-display">
-        Click "Start Test" to begin...
-        <input type="text" id="input-field" autocomplete="off">
-    </div>
-
-    <div class="controls">
-        <input type="text" id="user-name" placeholder="Full Name for Cert">
-        <select id="duration-select">
-            <option value="60">1 Minute</option>
-            <option value="30">30 Seconds</option>
-        </select>
-        <button onclick="startTest()" id="start-btn">Start Test</button>
-        <button onclick="downloadPDF()" id="download-btn" style="display:none; background:#10b981">Download Cert</button>
-    </div>
-</div>
-
-<div id="cert-container-hidden">
-    <div id="pdf-wrap">
-        <div id="pdf-content">
-            <h1 class="c-title">CERTIFICATE OF COMPETENCY</h1>
-            <p class="c-sub">OFFICIAL TYPING PERFORMANCE RECORD</p>
-            <p>This document certifies that</p>
-            <div class="c-name" id="display-name">Sashi Poorna Sivani</div>
-            <p>has achieved professional speed in a controlled evaluation.</p>
-            
-            <div class="c-metrics">
-                <div class="m-box"><span class="m-val" id="cert-wpm">0</span><span class="m-lbl">WPM</span></div>
-                <div class="m-box"><span class="m-val" id="cert-acc">0%</span><span class="m-lbl">Accuracy</span></div>
-                <div class="m-box"><span class="m-val" id="cert-tier">N/A</span><span class="m-lbl">Tier</span></div>
+<div class="main-layout">
+    <div class="project-box">
+        
+        <div class="header-container">
+            <div class="logo-circle">
+                <img src="logo.png" alt="Sashi Logo" class="brand-logo" onerror="this.style.display='none'">
             </div>
-            <div style="margin-top: 40px; font-size: 11px; color: #94a3b8;">VERIFIED BY SASHI COMPUTER INSTITUTE • REF: SCI-2026</div>
+            <h2 class="title-glow">Performance Analyzer</h2>
+        </div>
+
+        <div class="setup-row">
+            <select id="diff-config" class="custom-select" onchange="loadNewSentence()">
+                <option value="easy">Level: Associate</option>
+                <option value="medium" selected>Level: Professional</option>
+                <option value="hard">Level: Expert</option>
+            </select>
+            <select id="time-config" class="custom-select" onchange="initUI()">
+                <option value="30">30s Duration</option>
+                <option value="60" selected>60s Duration</option>
+            </select>
+        </div>
+        <div class="stats-grid">
+            <div class="stat-box"><label>Remaining</label><span id="live-timer">60s</span></div>
+            <div class="stat-box"><label>Current WPM</label><span id="live-wpm">0</span></div>
+            <div class="stat-box"><label>Accuracy</label><span id="live-acc">0%</span></div>
+            <div class="stat-box"><label>Session Best</label><span id="best-wpm">0</span></div>
+        </div>
+        <div class="analysis-section">
+            <div class="chart-box"><canvas id="speedChart"></canvas></div>
+            <div class="leaderboard-box"><div id="leaderboard-list"></div></div>
+        </div>
+        <div id="display-area"></div>
+        <textarea id="typing-box" class="type-input" placeholder="Initiate test by typing here..."></textarea>
+        <div id="action-area">
+            <p class="developer-tag">System Architect: <span>Sashi Poorna Sivani</span></p>
+            <input type="text" id="user-name" class="name-input-glow" style="display:none;" placeholder="Enter Name for Certificate">
+            <div class="button-group">
+                <button class="btn restart-btn" onclick="location.reload()">New Session</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="cert-sidebar" class="certificate-panel">
+        <div id="pdf-wrap"> 
+             <div id="pdf-content">
+                <div class="ref-id-label">REF ID: <span id="pdf-ref-id"></span></div>
+                <div class="cert-border-decoration top-left"></div>
+                <div class="cert-border-decoration bottom-right"></div>
+                <div class="cert-header">
+                    <h1>Certificate of Competency</h1>
+                    <p>Official Performance Record</p>
+                </div>
+                <div class="cert-body">
+                    <p class="statement">This document certifies that</p>
+                    <span id="display-name" class="cert-name-display">Candidate</span>
+                    <p class="statement">has demonstrated proficiency in standardized typing evaluation.</p>
+                </div>
+                <div class="cert-metrics">
+                    <div class="metric"><p class="m-label">Words Per Minute</p><p id="cert-wpm" class="m-value">0</p></div>
+                    <div class="metric"><p class="m-label">Accuracy Rate</p><p id="cert-acc" class="m-value">0%</p></div>
+                    <div class="metric"><p class="m-label">Skill Tier</p><p id="cert-diff" class="m-value">PRO</p></div>
+                </div>
+                <div class="cert-footer">
+                    <div class="signature-box">
+                        <span style="font-family:'Dancing Script'; font-size:28px; color:#0f172a;">K.Sivani</span>
+                        <div class="sig-line"><p class="sig-title" style="color:var(--gold);">Project Architect</p></div>
+                    </div>
+                    <div class="badge-verified">DATA<br>VERIFIED</div>
+                    <div class="signature-box">
+                        <span id="cert-date" style="font-weight:800; font-size:18px; color:#0f172a;"></span>
+                        <div class="sig-line"><p class="sig-title" style="color:#64748b;">Issuance Date</p></div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>
 
 <script>
-    const quotes = [
-        "Integrity is doing the right thing when no one is looking.",
-        "Action is the foundational key to all success.",
-        "Success is not final, failure is not fatal.",
-        "Your only limit is your soul."
-    ];
+    const quotes = {
+        easy: ["The sun is very bright.", "I love to write code.", "Cats like to sleep.", "The apple is red.", "Birds fly in the sky.", "Drink water every day.", "A fast dog runs far.", "The moon glows at night.", "Music makes me happy.", "A small seed grows big.", "Kindness is a gift.", "Learn something new.", "The blue sea is deep.", "Rain falls on the grass.", "Summer is very hot.", "I can type very fast.", "Smile at the world.", "Trees have green leaves.", "A book is a good friend.", "Time flies very fast."],
+        medium: ["The best way to predict the future is to create it.", "Success is not final, failure is not fatal.", "Don't count the days, make the days count.", "Great things never come from comfort zones.", "Your only limit is your soul.", "Dream big and dare to fail.", "Action is the foundational key to all success.", "Small steps lead to big results over time.", "Integrity is doing the right thing when no one is looking.", "Hard work beats talent when talent doesn't work hard."],
+        hard: ["Linguistic diversity reflects the rich cultural heritage of civilizations.", "Quantum mechanics provides a mathematical description of dual particle behavior.", "The quintessential component of resilience is the ability to adapt.", "Technological advancements accelerate the rate of global information exchange.", "Socioeconomic factors play a pivotal role in urban development strategies.", "Philosophical inquiries into the nature of reality often yield paradoxes.", "The juxtaposition of light and shadow creates a dramatic visual effect.", "Biotechnology is revolutionizing the approach to modern medical treatments.", "Cryptographic algorithms ensure the integrity of digital transactions.", "Atmospheric carbon dioxide levels contribute significantly to global warming."]
+    };
 
-    let timer, timeLeft, isRunning = false;
-    let charIndex = 0, mistakes = 0, bestWPM = 0;
+    let timeRemaining, isTestActive = false, timerRef, totalSeconds;
+    let speedChart, scores = JSON.parse(localStorage.getItem('sashi_scores_exec')) || [];
 
-    const quoteDisplay = document.getElementById('quote-display');
-    const inputField = document.getElementById('input-field');
-    const timerDisplay = document.getElementById('timer');
-    const wpmDisplay = document.getElementById('wpm');
-    const accDisplay = document.getElementById('accuracy');
-    const downloadBtn = document.getElementById('download-btn');
-
-    function loadQuote() {
-        quoteDisplay.innerHTML = "";
-        quotes[Math.floor(Math.random() * quotes.length)].split("").forEach(char => {
-            quoteDisplay.innerHTML += `<span>${char}</span>`;
-        });
-        quoteDisplay.querySelectorAll('span')[0].classList.add('current-char');
+    function initUI() {
+        document.getElementById('best-wpm').innerText = scores.length > 0 ? scores[0].wpm : 0;
+        document.getElementById('live-timer').innerText = document.getElementById('time-config').value + 's';
+        updateHistory(); 
+        initChart(); 
+        loadNewSentence();
     }
 
-    function startTest() {
-        if(isRunning) return;
-        loadQuote();
-        charIndex = mistakes = 0;
-        timeLeft = parseInt(document.getElementById('duration-select').value);
-        isRunning = true;
-        inputField.value = "";
-        inputField.focus();
-        downloadBtn.style.display = 'none';
-        document.getElementById('start-btn').innerText = "Typing...";
+    function initChart() {
+        const ctx = document.getElementById('speedChart').getContext('2d');
+        if(speedChart) speedChart.destroy();
+        speedChart = new Chart(ctx, { 
+             type: 'line', 
+             data: { labels: [], datasets: [{ data: [], borderColor: '#58a6ff', fill: true, backgroundColor: 'rgba(88, 166, 255, 0.1)', tension: 0.4 }] }, 
+             options: { 
+                 responsive: true, 
+                 maintainAspectRatio: false, 
+                 plugins: { legend: { display: false } }, 
+                 scales: { y: { beginAtZero: true, suggestedMax: 100 }, x: { display: false } } 
+             } 
+         });
+    }
 
-        timer = setInterval(() => {
-            if(timeLeft > 0) {
-                timeLeft--;
-                timerDisplay.innerText = timeLeft + "s";
-                let wpm = Math.round(((charIndex - mistakes) / 5) / ((parseInt(document.getElementById('duration-select').value) - timeLeft) / 60));
-                wpmDisplay.innerText = wpm > 0 ? wpm : 0;
-            } else { endTest(); }
+    function loadNewSentence() {
+        const difficulty = document.getElementById('diff-config').value;
+        const selectedLevel = quotes[difficulty];
+        const randomSentence = selectedLevel[Math.floor(Math.random() * selectedLevel.length)];
+        document.getElementById('display-area').innerHTML = randomSentence.split('').map(char => `<span>${char}</span>`).join('');
+        document.getElementById('typing-box').value = '';
+    }
+
+    document.getElementById('typing-box').addEventListener('input', (e) => {
+        if(!isTestActive && e.target.value.length > 0) startTest();
+        if(isTestActive) validate();
+    });
+
+    function startTest() {
+        isTestActive = true; 
+        totalSeconds = parseInt(document.getElementById('time-config').value); 
+        timeRemaining = totalSeconds;
+        document.getElementById('diff-config').disabled = true; 
+        document.getElementById('time-config').disabled = true;
+        
+        timerRef = setInterval(() => {
+            timeRemaining--; 
+            document.getElementById('live-timer').innerText = timeRemaining + 's';
+            
+            // Update live Chart
+            speedChart.data.labels.push(totalSeconds - timeRemaining);
+            speedChart.data.datasets[0].data.push(parseInt(document.getElementById('live-wpm').innerText) || 0);
+            speedChart.update();
+
+            if (timeRemaining <= 0) { 
+                clearInterval(timerRef); 
+                endTestSession(); 
+            }
         }, 1000);
     }
 
-    inputField.addEventListener('input', () => {
-        const characters = quoteDisplay.querySelectorAll('span');
-        let typedChar = inputField.value.split("")[charIndex];
+    function validate() {
+        const typingBox = document.getElementById('typing-box');
+        const spans = document.getElementById('display-area').querySelectorAll('span');
+        const entry = typingBox.value.split('');
+        let correct = 0;
+        let hasError = false;
 
-        if(charIndex < characters.length && timeLeft > 0) {
-            if(typedChar == null) {
-                if(charIndex > 0) {
-                    charIndex--;
-                    if(characters[charIndex].classList.contains('incorrect')) mistakes--;
-                    characters[charIndex].classList.remove('correct', 'incorrect');
-                }
-            } else {
-                if(characters[charIndex].innerText === typedChar) {
-                    characters[charIndex].classList.add('correct');
-                } else {
-                    mistakes++;
-                    characters[charIndex].classList.add('incorrect');
-                }
-                charIndex++;
-            }
-            characters.forEach(span => span.classList.remove('current-char'));
-            if(charIndex < characters.length) characters[charIndex].classList.add('current-char');
-            let acc = Math.round(((charIndex - mistakes) / charIndex) * 100);
-            accDisplay.innerText = (acc || 0) + "%";
-        }
-    });
+        spans.forEach((s, i) => { 
+             if(entry[i] == null) s.className = ''; 
+             else if(entry[i] === s.innerText) { 
+                 s.className = 'success'; 
+                 correct++; 
+             } else { 
+                 s.className = 'fail'; 
+                 hasError = true;
+             }
+         });
 
-    function endTest() {
-        clearInterval(timer);
-        isRunning = false;
-        document.getElementById('start-btn').innerText = "Restart";
-        let finalWPM = parseInt(wpmDisplay.innerText);
-        if(finalWPM > bestWPM) { bestWPM = finalWPM; document.getElementById('best-wpm').innerText = bestWPM; }
+        // Error Feedback
+        if(hasError) typingBox.classList.add('input-error');
+        else typingBox.classList.remove('input-error');
+
+        let elapsed = (totalSeconds - timeRemaining) / 60 || 0.001;
+        document.getElementById('live-wpm').innerText = Math.round((entry.length / 5) / elapsed);
+        document.getElementById('live-acc').innerText = entry.length > 0 ? Math.round((correct / entry.length) * 100) + '%' : '0%';
         
-        if(finalWPM > 5) {
-            downloadBtn.style.display = 'inline-block';
-            document.getElementById('cert-wpm').innerText = finalWPM;
-            document.getElementById('cert-acc').innerText = accDisplay.innerText;
-            document.getElementById('cert-tier').innerText = finalWPM > 50 ? "Elite" : "Pro";
+        if(entry.length >= spans.length) loadNewSentence();
+    }
+
+    function endTestSession() {
+        isTestActive = false; 
+        document.getElementById('typing-box').disabled = true;
+        const finalWpm = document.getElementById('live-wpm').innerText;
+        const finalAcc = document.getElementById('live-acc').innerText;
+        const generatedID = 'SV-' + Math.floor(100000 + Math.random() * 900000);
+        
+        scores.unshift({ wpm: finalWpm, acc: finalAcc, date: new Date().toLocaleDateString() });
+        localStorage.setItem('sashi_scores_exec', JSON.stringify(scores));
+        updateHistory();
+        
+        document.getElementById('pdf-ref-id').innerText = generatedID;
+        document.getElementById('user-name').style.display = "block";
+        document.getElementById('cert-wpm').innerText = finalWpm;
+        document.getElementById('cert-acc').innerText = finalAcc;
+        document.getElementById('cert-diff').innerText = document.getElementById('diff-config').value.toUpperCase();
+        document.getElementById('cert-date').innerText = new Date().toLocaleDateString();
+        
+        if(!document.querySelector('.download-btn')) {
+            const btn = document.createElement('button');
+            btn.className = "btn download-btn"; 
+            btn.innerText = "DOWNLOAD CERTIFICATE (PDF)";
+            btn.onclick = downloadPDF; 
+            document.querySelector('.button-group').prepend(btn);
         }
     }
 
     function downloadPDF() {
-        const name = document.getElementById('user-name').value || "Professional Typist";
-        document.getElementById('display-name').innerText = name;
+        const candidateName = document.getElementById('user-name').value || "Sashi Poorna Sivani";
+        document.getElementById('display-name').innerText = candidateName;
+        const sidebar = document.getElementById('cert-sidebar');
+        sidebar.style.display = 'block';
+        
         const element = document.getElementById('pdf-wrap');
         const opt = { 
-            margin: 0, 
-            filename: `SCI_Cert_${name}.pdf`,
-            image: { type: 'jpeg', quality: 0.98 },
-            html2canvas: { scale: 2 },
-            jsPDF: { orientation: 'landscape', unit: 'px', format: [900, 600] }
+             margin: 0, 
+             filename: `Typing_Certificate_${candidateName.replace(/\s+/g, '_')}.pdf`, 
+             image: { type: 'jpeg', quality: 1.0 },
+             html2canvas: { scale: 3, useCORS: true }, 
+             jsPDF: { orientation: 'landscape', unit: 'px', format: [980, 700] }
         };
-        html2pdf().from(element).set(opt).save();
+        
+        html2pdf().from(element).set(opt).save().then(() => { 
+            sidebar.style.display = 'none'; 
+        });
     }
-</script>
 
+    function updateHistory() {
+        document.getElementById('leaderboard-list').innerHTML = scores.slice(0, 5).map(s => 
+            `<div style="display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid #333;"><b style="color:var(--accent-glow)">${s.wpm} WPM</b><span style="color:#8b949e;">${s.date}</span></div>`
+        ).join('');
+    }
+
+    // Run on startup
+    window.onload = initUI;
+</script>
 </body>
 </html>
