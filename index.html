@@ -8,18 +8,12 @@
     
     <title>Sashi's Typing Analyzer - Executive Edition</title>
     
-    <link rel="icon" href="logo.png" type="image/png">
-
     <meta name="author" content="Katakam Sashi Poorna Sivani">
     <meta name="description" content="A professional performance analyzer for typing speed and accuracy with certified results.">
-    
     <meta property="og:title" content="Sashi's Typing Analyzer - Executive Edition">
     <meta property="og:description" content="Test your typing speed and generate a professional competency certificate.">
     <meta property="og:url" content="https://sashi-website.vercel.app">
     <meta property="og:type" content="website">
-    <meta property="og:image" content="https://sashi-website.vercel.app/logo.png">
-    <meta property="og:image:width" content="1200">
-    <meta property="og:image:height" content="630">
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -42,12 +36,34 @@
             border-radius: 16px; padding: 35px; box-shadow: 0 20px 50px rgba(0,0,0,0.6);
         }
         
-        /* LOGO STYLING */
-        .header-container { text-align: center; margin-bottom: 20px; }
-        .brand-logo { width: 80px; height: 80px; border-radius: 50%; border: 2px solid var(--accent-glow); margin-bottom: 10px; }
+        /* LOGO CIRCLE STYLES */
+        .header-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+        .logo-circle {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            border: 2px solid var(--accent-glow);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            margin-bottom: 15px;
+            background: var(--bg-dark);
+            box-shadow: 0 0 15px rgba(88, 166, 255, 0.2);
+        }
+        .brand-logo {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
 
-        .title-glow { text-align: center; color: var(--accent-glow); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 30px; margin-top: 0; }
-        .setup-row { display: flex; gap: 15px; margin-bottom: 25px; }
+        .title-glow { text-align: center; color: var(--accent-glow); text-transform: uppercase; letter-spacing: 2px; margin: 0; }
+        .setup-row { display: flex; gap: 15px; margin-bottom: 25px; margin-top: 25px; }
         .custom-select { 
              background: var(--bg-dark); color: var(--accent-glow); 
              border: 1px solid #333; padding: 12px; border-radius: 10px; 
@@ -113,8 +129,11 @@
 
 <div class="main-layout">
     <div class="project-box">
+        
         <div class="header-container">
-            <img src="logo.png" alt="Sashi Logo" class="brand-logo" onerror="this.style.display='none'">
+            <div class="logo-circle">
+                <img src="sashi-logo.png" alt="Sashi Logo" class="brand-logo" onerror="this.style.display='none'">
+            </div>
             <h2 class="title-glow">Performance Analyzer</h2>
         </div>
 
