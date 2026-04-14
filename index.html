@@ -14,6 +14,7 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;800&family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
     
     <style>
@@ -32,20 +33,52 @@
             background: var(--card-bg); border: 1px solid #30363d;
             border-radius: 16px; padding: 35px; box-shadow: 0 20px 50px rgba(0,0,0,0.6);
         }
-        
+
+        /* FIX 2: Name input box at top */
+        .name-entry-box {
+            background: var(--bg-dark);
+            border: 1px solid var(--gold);
+            border-radius: 10px;
+            padding: 14px 20px;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        .name-entry-box label {
+            font-size: 13px;
+            color: var(--text-muted);
+            white-space: nowrap;
+        }
+        .name-entry-box input {
+            flex: 1;
+            min-width: 180px;
+            background: var(--card-bg);
+            border: 1px solid #444;
+            color: white;
+            border-radius: 8px;
+            padding: 8px 14px;
+            font-size: 14px;
+            font-family: 'Inter', sans-serif;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        .name-entry-box input:focus {
+            border-color: var(--gold);
+        }
+
         .header-container {
             display: flex;
             flex-direction: column;
             align-items: center;
             margin-bottom: 30px;
         }
-
         .logo-container {
             width: 80px;
             height: 80px;
             margin-bottom: 15px;
         }
-        /* Added .logo-class for your requested class name */
         .logo-container img, .logo-class {
             width: 80px;
             height: 80px;
@@ -55,28 +88,64 @@
             box-shadow: 0 0 15px rgba(88, 166, 255, 0.2);
             transition: transform 0.3s ease;
         }
-        .logo-container img:hover {
-            transform: scale(1.05);
-        }
+        .logo-container img:hover { transform: scale(1.05); }
 
         .title-glow { text-align: center; color: var(--accent-glow); text-transform: uppercase; letter-spacing: 2px; margin: 0; }
         .setup-row { display: flex; gap: 15px; margin-bottom: 25px; margin-top: 25px; }
-        .custom-select { 
-             background: var(--bg-dark); color: var(--accent-glow); 
-             border: 1px solid #333; padding: 12px; border-radius: 10px; 
-             flex: 1; cursor: pointer; font-weight: 600;
+        .custom-select {
+            background: var(--bg-dark); color: var(--accent-glow);
+            border: 1px solid #333; padding: 12px; border-radius: 10px;
+            flex: 1; cursor: pointer; font-weight: 600;
         }
-        .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 25px; }
+        .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 10px; }
         .stat-box { background: var(--bg-dark); padding: 15px; border-radius: 12px; text-align: center; border: 1px solid #333; }
         .stat-box label { display: block; font-size: 10px; color: var(--text-muted); text-transform: uppercase; }
         .stat-box span { font-size: 24px; font-weight: 800; color: var(--accent-glow); }
-        .analysis-section { display: flex; gap: 20px; margin-bottom: 25px; height: 220px;}
+
+        /* FIX 4: Progress bar */
+        .timer-bar-wrap {
+            margin-bottom: 20px;
+            padding: 0 2px;
+        }
+        .timer-bar-outer {
+            background: #1a1a1a;
+            border-radius: 6px;
+            height: 8px;
+            overflow: hidden;
+        }
+        .timer-bar-inner {
+            height: 100%;
+            border-radius: 6px;
+            background: var(--accent-glow);
+            width: 100%;
+            transition: width 1s linear, background-color 0.5s;
+        }
+
+        .analysis-section { display: flex; gap: 20px; margin-bottom: 25px; height: 220px; }
         .chart-box { flex: 2; background: var(--bg-dark); border: 1px solid #30363d; border-radius: 12px; padding: 15px; }
-        .leaderboard-box { flex: 1; background: var(--bg-dark); border: 1px solid #30363d; border-radius: 12px; padding: 15px; overflow-y: auto;}
-        #display-area { 
-             background: #000; padding: 25px; border-radius: 12px; font-size: 22px; 
-             min-height: 50px; margin-bottom: 15px; border-left: 4px solid var(--accent-glow); line-height: 1.6;
+        .leaderboard-box { flex: 1; background: var(--bg-dark); border: 1px solid #30363d; border-radius: 12px; padding: 15px; overflow-y: auto; }
+
+        /* FIX 5: Leaderboard heading */
+        .leaderboard-heading {
+            font-size: 10px;
+            color: var(--accent-glow);
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #333;
+            margin-bottom: 4px;
+        }
+
+        #display-area {
+            background: #000; padding: 25px; border-radius: 12px; font-size: 22px;
+            min-height: 50px; margin-bottom: 15px; border-left: 4px solid var(--accent-glow); line-height: 1.6;
             word-wrap: break-word;
+        }
+        .start-hint {
+            font-size: 14px;
+            color: #444;
+            font-style: italic;
         }
         .success { color: var(--success); }
         .fail { color: #f85149; background: rgba(248, 81, 73, 0.1); }
@@ -88,24 +157,20 @@
         .developer-tag { font-size: 12px; color: var(--text-muted); margin-bottom: 10px; }
         .developer-tag span { color: var(--accent-glow); font-weight: bold; }
         .btn { padding: 14px 30px; border-radius: 8px; border: none; font-weight: 700; cursor: pointer; }
-        .download-btn { background: var(--gold); color: #000; margin-bottom: 15px;}
+        .download-btn { background: var(--gold); color: #000; margin-bottom: 10px; margin-right: 8px; }
+        .download-png-btn { background: #333; color: white; margin-bottom: 10px; margin-right: 8px; }
         .restart-btn { background: #333; color: white; }
-        .name-input-glow {
-            display: block; margin: 15px auto; width: 320px; padding: 12px; background: #161b22;
-            border: 1px solid var(--gold); color: white; border-radius: 8px; text-align: center;
-        }
         .certificate-panel { display: none; }
         #pdf-wrap { background: #f8fafc; padding: 40px; width: 980px; height: 700px; box-sizing: border-box; }
         #pdf-content {
-            background: #ffffff; color: #1e293b; padding: 40px; 
-            border: 12px double #1e293b; 
+            background: #ffffff; color: #1e293b; padding: 40px;
+            border: 12px double #1e293b;
             width: 900px; height: 620px; position: relative; margin: 0 auto; box-sizing: border-box; border-radius: 4px;
         }
         .ref-id-label { position: absolute; top: 25px; right: 35px; font-family: monospace; font-size: 12px; color: #64748b; }
         .cert-border-decoration { position: absolute; width: 60px; height: 60px; border: 4px solid var(--gold); z-index: 10; }
         .top-left { top: 15px; left: 15px; border-right: none; border-bottom: none; }
         .bottom-right { bottom: 15px; right: 15px; border-left: none; border-top: none; }
-        
         .cert-logo-container {
             position: absolute;
             top: 25px;
@@ -113,7 +178,6 @@
             width: 50px;
             height: 50px;
         }
-        
         .cert-header { text-align: center; }
         .cert-header h1 { font-size: 40px; color: #0f172a; margin: 0; letter-spacing: 2px; text-transform: uppercase; font-weight: 800; }
         .cert-header p { font-size: 14px; letter-spacing: 4px; color: var(--gold); font-weight: bold; margin-top: 5px; text-transform: uppercase; }
@@ -129,13 +193,24 @@
         .sig-line { border-top: 2px solid #1e293b; margin-top: 8px; padding-top: 4px; }
         .sig-title { font-size: 11px; font-weight: 800; text-transform: uppercase; margin: 0; }
         .badge-verified { width: 85px; height: 85px; background: var(--gold); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 12px; color: #fff; border: 4px double #fff; text-align: center; transform: rotate(-10deg); box-shadow: 0 4px 15px rgba(212, 175, 55, 0.4); }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .project-box { padding: 18px; }
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+            .analysis-section { flex-direction: column; height: auto; }
+            .leaderboard-box { height: 150px; }
+            .setup-row { flex-direction: column; }
+            #display-area { font-size: 16px; }
+            .type-input { font-size: 15px; }
+        }
     </style>
 </head>
 <body>
 
 <div class="main-layout">
     <div class="project-box">
-        
+
         <div class="header-container">
             <div class="logo-container">
                 <a href="logo.png" target="_blank" rel="noopener noreferrer">
@@ -143,6 +218,12 @@
                 </a>
             </div>
             <h2 class="title-glow">Performance Analyzer</h2>
+        </div>
+
+        <!-- FIX 2: Name input moved to TOP, always visible -->
+        <div class="name-entry-box">
+            <label>Your name for certificate:</label>
+            <input type="text" id="user-name" placeholder="Enter your full name..." autocomplete="off">
         </div>
 
         <div class="setup-row">
@@ -156,21 +237,37 @@
                 <option value="60" selected>60s Duration</option>
             </select>
         </div>
+
         <div class="stats-grid">
             <div class="stat-box"><label>Remaining</label><span id="live-timer">60s</span></div>
-            <div class="stat-box"><label>Current WPM</label><span id="live-wpm">0</span></div>
-            <div class="stat-box"><label>Accuracy</label><span id="live-acc">0%</span></div>
-            <div class="stat-box"><label>Session Best</label><span id="best-wpm">0</span></div>
+            <!-- FIX 1: Show dashes instead of 0 on load -->
+            <div class="stat-box"><label>Current WPM</label><span id="live-wpm">—</span></div>
+            <div class="stat-box"><label>Accuracy</label><span id="live-acc">—</span></div>
+            <div class="stat-box"><label>Session Best</label><span id="best-wpm">—</span></div>
         </div>
+
+        <!-- FIX 4: Progress bar timer -->
+        <div class="timer-bar-wrap">
+            <div class="timer-bar-outer">
+                <div class="timer-bar-inner" id="timer-bar"></div>
+            </div>
+        </div>
+
         <div class="analysis-section">
             <div class="chart-box"><canvas id="speedChart"></canvas></div>
-            <div class="leaderboard-box"><div id="leaderboard-list"></div></div>
+            <div class="leaderboard-box">
+                <!-- FIX 5: Leaderboard heading -->
+                <div class="leaderboard-heading">Session Best Scores</div>
+                <div id="leaderboard-list"></div>
+            </div>
         </div>
-        <div id="display-area"></div>
+
+        <!-- FIX 1: Start hint in display area -->
+        <div id="display-area"><span class="start-hint">Select your level and start typing below...</span></div>
         <textarea id="typing-box" class="type-input" placeholder="Initiate test by typing here..."></textarea>
+
         <div id="action-area">
             <p class="developer-tag">System Architect: <span>Sashi Poorna Sivani</span></p>
-            <input type="text" id="user-name" class="name-input-glow" style="display:none;" placeholder="Candidate Full Name">
             <div class="button-group">
                 <button class="btn restart-btn" onclick="location.reload()">New Session</button>
             </div>
@@ -178,13 +275,14 @@
     </div>
 
     <div id="cert-sidebar" class="certificate-panel">
-        <div id="pdf-wrap"> 
-             <div id="pdf-content">
+        <div id="pdf-wrap">
+            <div id="pdf-content">
                 <div class="cert-logo-container">
                     <a href="logo.png" target="_blank" rel="noopener noreferrer">
                         <img src="logo.png" alt="Logo" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">
                     </a>
                 </div>
+                <!-- FIX 3: REF ID already works, kept as-is -->
                 <div class="ref-id-label">REF ID: <span id="pdf-ref-id"></span></div>
                 <div class="cert-border-decoration top-left"></div>
                 <div class="cert-border-decoration bottom-right"></div>
@@ -229,19 +327,45 @@
     let speedChart, scores = JSON.parse(localStorage.getItem('sashi_scores_exec')) || [];
 
     function initUI() {
-        document.getElementById('best-wpm').innerText = scores.length > 0 ? scores[0].wpm : 0;
+        const best = scores.length > 0 ? scores[0].wpm : '—';
+        document.getElementById('best-wpm').innerText = best;
         document.getElementById('live-timer').innerText = document.getElementById('time-config').value + 's';
-        updateHistory(); initChart(); loadNewSentence();
+        // FIX 1: reset to dashes on new session
+        document.getElementById('live-wpm').innerText = '—';
+        document.getElementById('live-acc').innerText = '—';
+        // FIX 4: reset progress bar
+        document.getElementById('timer-bar').style.width = '100%';
+        document.getElementById('timer-bar').style.backgroundColor = 'var(--accent-glow)';
+        updateHistory();
+        initChart();
+        loadNewSentence();
     }
 
     function initChart() {
         const ctx = document.getElementById('speedChart').getContext('2d');
-        if(speedChart) speedChart.destroy();
-        speedChart = new Chart(ctx, { 
-             type: 'line', 
-             data: { labels: [0], datasets: [{ data: [0], borderColor: '#58a6ff', fill: true, backgroundColor: 'rgba(88, 166, 255, 0.1)', tension: 0.4 }] }, 
-             options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } } 
-         });
+        if (speedChart) speedChart.destroy();
+        speedChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: [0],
+                datasets: [{
+                    data: [0],
+                    borderColor: '#58a6ff',
+                    fill: true,
+                    backgroundColor: 'rgba(88, 166, 255, 0.1)',
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                    x: { ticks: { color: '#8b949e' }, grid: { color: '#1a1a1a' } },
+                    y: { ticks: { color: '#8b949e' }, grid: { color: '#1a1a1a' } }
+                }
+            }
+        });
     }
 
     function loadNewSentence() {
@@ -253,19 +377,37 @@
     }
 
     document.getElementById('typing-box').addEventListener('input', () => {
-        if(!isTestActive && document.getElementById('typing-box').value.length > 0) startTest();
-        if(isTestActive) validate();
+        if (!isTestActive && document.getElementById('typing-box').value.length > 0) startTest();
+        if (isTestActive) validate();
     });
 
     function startTest() {
-        isTestActive = true; totalSeconds = parseInt(document.getElementById('time-config').value); timeRemaining = totalSeconds;
-        document.getElementById('diff-config').disabled = true; document.getElementById('time-config').disabled = true;
+        isTestActive = true;
+        totalSeconds = parseInt(document.getElementById('time-config').value);
+        timeRemaining = totalSeconds;
+        document.getElementById('diff-config').disabled = true;
+        document.getElementById('time-config').disabled = true;
+
         timerRef = setInterval(() => {
-            timeRemaining--; 
+            timeRemaining--;
             document.getElementById('live-timer').innerText = timeRemaining + 's';
+
+            // FIX 4: update progress bar width and colour
+            const pct = (timeRemaining / totalSeconds) * 100;
+            const bar = document.getElementById('timer-bar');
+            bar.style.width = pct + '%';
+            if (pct > 50) {
+                bar.style.backgroundColor = 'var(--accent-glow)';
+            } else if (pct > 20) {
+                bar.style.backgroundColor = '#d4af37';
+            } else {
+                bar.style.backgroundColor = '#f85149';
+            }
+
             speedChart.data.labels.push(totalSeconds - timeRemaining);
             speedChart.data.datasets[0].data.push(parseInt(document.getElementById('live-wpm').innerText) || 0);
             speedChart.update();
+
             if (timeRemaining <= 0) { clearInterval(timerRef); endTestSession(); }
         }, 1000);
     }
@@ -276,64 +418,111 @@
         const entry = document.getElementById('typing-box').value.split('');
         let correct = 0;
 
-        spans.forEach((s, i) => { 
-             if(entry[i] == null) s.className = ''; 
-             else if(entry[i] === s.innerText) { s.className = 'success'; correct++; } 
-             else s.className = 'fail'; 
-         });
+        spans.forEach((s, i) => {
+            if (entry[i] == null) s.className = '';
+            else if (entry[i] === s.innerText) { s.className = 'success'; correct++; }
+            else s.className = 'fail';
+        });
 
         let elapsed = (totalSeconds - timeRemaining) / 60 || 0.001;
         document.getElementById('live-wpm').innerText = Math.round((entry.length / 5) / elapsed);
         document.getElementById('live-acc').innerText = entry.length > 0 ? Math.round((correct / entry.length) * 100) + '%' : '0%';
-        if(entry.length >= spans.length) loadNewSentence();
+        if (entry.length >= spans.length) loadNewSentence();
     }
 
     function endTestSession() {
-        isTestActive = false; 
+        isTestActive = false;
         document.getElementById('typing-box').disabled = true;
+
         const finalWpm = document.getElementById('live-wpm').innerText;
         const finalAcc = document.getElementById('live-acc').innerText;
         const generatedID = 'SV-' + Math.floor(100000 + Math.random() * 900000);
+
         scores.unshift({ wpm: finalWpm, acc: finalAcc, date: new Date().toLocaleDateString() });
+        if (scores.length > 10) scores = scores.slice(0, 10);
         localStorage.setItem('sashi_scores_exec', JSON.stringify(scores));
+        document.getElementById('best-wpm').innerText = scores[0].wpm;
         updateHistory();
+
         document.getElementById('pdf-ref-id').innerText = generatedID;
-        document.getElementById('user-name').style.display = "block";
+
+        // FIX 2: read name from top input
+        const candidateName = document.getElementById('user-name').value.trim() || 'Sashi Poorna Sivani';
+        document.getElementById('display-name').innerText = candidateName;
+
         document.getElementById('cert-wpm').innerText = finalWpm;
         document.getElementById('cert-acc').innerText = finalAcc;
         document.getElementById('cert-diff').innerText = document.getElementById('diff-config').value.toUpperCase();
         document.getElementById('cert-date').innerText = new Date().toLocaleDateString();
-        if(!document.querySelector('.download-btn')) {
-            const btn = document.createElement('button');
-            btn.className = "btn download-btn"; 
-            btn.innerText = "DOWNLOAD CERTIFICATE (PDF)";
-            btn.onclick = downloadPDF; 
-            document.querySelector('.button-group').prepend(btn);
+
+        if (!document.querySelector('.download-btn')) {
+            // PDF button
+            const btnPDF = document.createElement('button');
+            btnPDF.className = 'btn download-btn';
+            btnPDF.innerText = 'DOWNLOAD PDF';
+            btnPDF.onclick = downloadPDF;
+
+            // FIX 3: PNG download button
+            const btnPNG = document.createElement('button');
+            btnPNG.className = 'btn download-png-btn';
+            btnPNG.innerText = 'DOWNLOAD PNG';
+            btnPNG.onclick = downloadPNG;
+
+            document.querySelector('.button-group').prepend(btnPNG);
+            document.querySelector('.button-group').prepend(btnPDF);
         }
     }
 
     function downloadPDF() {
-        const candidateName = document.getElementById('user-name').value || "Sashi Poorna Sivani";
+        const candidateName = document.getElementById('user-name').value.trim() || 'Sashi Poorna Sivani';
         document.getElementById('display-name').innerText = candidateName;
         const sidebar = document.getElementById('cert-sidebar');
         sidebar.style.display = 'block';
-        window.scrollTo(0,0);
+        window.scrollTo(0, 0);
         const element = document.getElementById('pdf-wrap');
-        const opt = { 
-             margin: 0, 
-             filename: `Sashi_Competency_Record_${candidateName}.pdf`, 
-             image: { type: 'jpeg', quality: 1.0 },
-             html2canvas: { scale: 3, useCORS: true, letterRendering: true, height: 700, windowHeight: 700 }, 
-             jsPDF: { orientation: 'landscape', unit: 'px', format: [980, 700], putOnlyUsedFonts: true, floatPrecision: 16 }
+        const opt = {
+            margin: 0,
+            filename: `Sashi_Competency_Record_${candidateName}.pdf`,
+            image: { type: 'jpeg', quality: 1.0 },
+            html2canvas: { scale: 3, useCORS: true, letterRendering: true, height: 700, windowHeight: 700 },
+            jsPDF: { orientation: 'landscape', unit: 'px', format: [980, 700], putOnlyUsedFonts: true, floatPrecision: 16 }
         };
         html2pdf().from(element).set(opt).save().then(() => { sidebar.style.display = 'none'; });
     }
 
-    function updateHistory() {
-        document.getElementById('leaderboard-list').innerHTML = scores.slice(0, 5).map(s => 
-            `<div style="display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid #333;"><b style="color:var(--accent-glow)">${s.wpm} WPM</b><span style="color:#8b949e;">${s.date}</span></div>`
-        ).join('');
+    // FIX 3: PNG download using html2canvas
+    function downloadPNG() {
+        const candidateName = document.getElementById('user-name').value.trim() || 'Sashi Poorna Sivani';
+        document.getElementById('display-name').innerText = candidateName;
+        const sidebar = document.getElementById('cert-sidebar');
+        sidebar.style.display = 'block';
+        window.scrollTo(0, 0);
+        html2canvas(document.getElementById('pdf-content'), {
+            scale: 2,
+            useCORS: true,
+            backgroundColor: '#ffffff'
+        }).then(canvas => {
+            sidebar.style.display = 'none';
+            const link = document.createElement('a');
+            link.download = `Sashi_Competency_Record_${candidateName}.png`;
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        });
     }
+
+    // FIX 5: leaderboard with rank numbers
+    function updateHistory() {
+        const rankSymbols = ['🥇', '🥈', '🥉'];
+        document.getElementById('leaderboard-list').innerHTML = scores.slice(0, 5).map((s, i) => {
+            const rank = rankSymbols[i] || `#${i + 1}`;
+            return `<div style="display:flex; align-items:center; gap:8px; padding:7px 0; border-bottom:1px solid #333;">
+                <span style="font-size:13px; min-width:22px;">${rank}</span>
+                <b style="color:var(--accent-glow); flex:1;">${s.wpm} WPM</b>
+                <span style="color:#8b949e; font-size:12px;">${s.date}</span>
+            </div>`;
+        }).join('');
+    }
+
     initUI();
 </script>
 </body>
