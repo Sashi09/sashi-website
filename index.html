@@ -6,7 +6,6 @@
     <title>Sashi's Typing Analyzer - Executive Edition</title>
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;800&family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
     
@@ -18,59 +17,59 @@
         }
         body {
             background-color: var(--bg-dark); color: var(--text-main);
-            font-family: 'Inter', sans-serif; margin: 0; padding: 50px 0; min-height: 100vh;
+            font-family: 'Inter', sans-serif; margin: 0; padding: 60px 0; min-height: 100vh;
             display: flex; justify-content: center; align-items: flex-start;
         }
-        .main-layout { width: 95%; max-width: 900px; }
+        .main-layout { width: 95%; max-width: 850px; }
         .project-box {
             background: var(--card-bg); border: 1px solid #30363d;
-            border-radius: 16px; padding: 35px; box-shadow: 0 20px 50px rgba(0,0,0,0.6);
+            border-radius: 16px; padding: 40px; box-shadow: 0 25px 60px rgba(0,0,0,0.7);
         }
-        .header-container { text-align: center; margin-bottom: 25px; }
-        .logo-class { width: 80px; height: 80px; border-radius: 50%; border: 2px solid var(--accent-glow); object-fit: cover; }
-        .title-glow { color: var(--accent-glow); text-transform: uppercase; letter-spacing: 2px; margin: 10px 0; }
+        .header-container { text-align: center; margin-bottom: 30px; }
+        .logo-class { width: 85px; height: 85px; border-radius: 50%; border: 2px solid var(--accent-glow); object-fit: cover; }
+        .title-glow { color: var(--accent-glow); text-transform: uppercase; letter-spacing: 2px; margin: 15px 0; }
 
         .name-entry-box {
             background: rgba(88, 166, 255, 0.05); border: 1px solid #30363d;
-            border-radius: 10px; padding: 15px; margin-bottom: 20px;
-            display: flex; align-items: center; gap: 10px;
+            border-radius: 10px; padding: 15px; margin-bottom: 25px;
+            display: flex; align-items: center; gap: 15px;
         }
         .name-entry-box input {
             flex: 1; background: #000; border: 1px solid var(--accent-glow);
-            color: white; border-radius: 6px; padding: 10px; outline: none;
+            color: white; border-radius: 6px; padding: 12px; outline: none; font-size: 16px;
         }
 
-        .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 20px; }
+        .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 25px; }
         .stat-box { background: var(--bg-dark); padding: 15px; border-radius: 12px; text-align: center; border: 1px solid #333; }
-        .stat-box label { display: block; font-size: 10px; color: var(--text-muted); text-transform: uppercase; }
-        .stat-box span { font-size: 22px; font-weight: 800; color: var(--accent-glow); }
+        .stat-box label { display: block; font-size: 11px; color: var(--text-muted); text-transform: uppercase; margin-bottom: 5px; }
+        .stat-box span { font-size: 24px; font-weight: 800; color: var(--accent-glow); }
         
         #display-area {
-            background: #000; padding: 25px; border-radius: 12px; font-size: 20px;
-            min-height: 60px; border-left: 4px solid var(--accent-glow); line-height: 1.6; margin-bottom: 15px;
+            background: #000; padding: 25px; border-radius: 12px; font-size: 22px;
+            min-height: 60px; border-left: 5px solid var(--accent-glow); line-height: 1.6; margin-bottom: 20px;
         }
         .type-input {
-            width: 100%; height: 100px; background: var(--bg-dark); border: 2px solid #333;
-            color: white; padding: 15px; border-radius: 12px; font-size: 18px; resize: none; outline: none;
+            width: 100%; height: 110px; background: var(--bg-dark); border: 2px solid #333;
+            color: white; padding: 15px; border-radius: 12px; font-size: 19px; resize: none; outline: none; box-sizing: border-box;
         }
         .type-input:focus { border-color: var(--accent-glow); }
         .success { color: var(--success); }
         .fail { color: #f85149; background: rgba(248, 81, 73, 0.1); border-radius: 2px; }
 
-        .btn { padding: 12px 25px; border-radius: 8px; border: none; font-weight: 700; cursor: pointer; transition: 0.3s; margin: 10px 5px; }
+        .btn { padding: 14px 30px; border-radius: 8px; border: none; font-weight: 700; cursor: pointer; transition: 0.3s; margin: 10px 5px; font-size: 15px; }
         .restart-btn { background: #333; color: white; }
         .download-btn { background: var(--gold); color: #000; display: none; } 
 
-        .qr-section { text-align: center; margin-top: 30px; border-top: 1px solid #333; padding-top: 20px; }
-        .qr-section img { border: 4px solid white; border-radius: 8px; background: white; margin: 10px 0; }
+        .qr-section { text-align: center; margin-top: 40px; border-top: 1px solid #333; padding-top: 25px; }
+        .qr-section img { border: 5px solid white; border-radius: 10px; background: white; margin: 15px 0; }
 
-        /* Off-screen Certificate Container */
-        #pdf-wrap { position: absolute; left: -9999px; width: 980px; height: 700px; background: #fff; }
+        /* Hidden Template for PDF Export */
+        #pdf-wrap { position: absolute; left: -9999px; width: 1000px; height: 720px; background: #fff; }
         #pdf-content { 
-            padding: 60px; border: 15px double #1e293b; color: #1e293b;
-            width: 900px; height: 620px; text-align: center; box-sizing: border-box;
+            padding: 60px; border: 20px double #1e293b; color: #1e293b;
+            width: 920px; height: 640px; text-align: center; box-sizing: border-box; margin: 40px auto;
         }
-        .cert-name { font-family: 'Dancing Script', cursive; font-size: 55px; border-bottom: 2px solid #cbd5e1; display: inline-block; padding: 0 40px; margin: 20px 0; }
+        .cert-name { font-family: 'Dancing Script', cursive; font-size: 65px; border-bottom: 3px solid #cbd5e1; display: inline-block; padding: 0 50px; margin: 25px 0; }
     </style>
 </head>
 <body>
@@ -83,8 +82,8 @@
         </div>
 
         <div class="name-entry-box">
-            <label style="font-size: 13px;">Full Name:</label>
-            <input type="text" id="user-name" placeholder="Enter name for certificate..." autocomplete="off">
+            <label>Candidate Name:</label>
+            <input type="text" id="user-name" placeholder="Name to appear on certificate..." autocomplete="off">
         </div>
 
         <div class="stats-grid">
@@ -95,18 +94,18 @@
         </div>
 
         <div id="display-area"></div>
-        <textarea id="typing-box" class="type-input" placeholder="Start typing above to begin analysis..."></textarea>
+        <textarea id="typing-box" class="type-input" placeholder="Begin typing here..."></textarea>
 
-        <div id="action-area" style="text-align:center; margin-top:20px;">
+        <div id="action-area" style="text-align:center; margin-top:25px;">
             <div id="btn-container">
                 <button id="download-cert-btn" class="btn download-btn" onclick="downloadPDF()">Download Official Certificate</button>
                 <button class="btn restart-btn" onclick="location.reload()">Reset Session</button>
             </div>
             
             <div class="qr-section">
-                <h3 style="font-size:12px; color:var(--gold); letter-spacing: 1px;">SHARE YOUR RESULTS</h3>
-                <img src="sashi-typing-analyzer-qr.png" alt="QR Code" width="130">
-                <p style="font-size:11px; color:var(--text-muted); margin-top:5px;">Architect: Sashi Poorna Sivani</p>
+                <h3 style="font-size:14px; color:var(--gold); letter-spacing: 2px;">SCAN TO TEST YOUR SPEED</h3>
+                <img src="sashi-typing-analyzer-qr.png" alt="QR Code" width="140">
+                <p style="font-size:12px; color:var(--text-muted); margin-top:8px;">Architect: Sashi Poorna Sivani</p>
             </div>
         </div>
     </div>
@@ -114,26 +113,26 @@
 
 <div id="pdf-wrap">
     <div id="pdf-content">
-        <h1 style="font-size:35px; margin-bottom:5px;">CERTIFICATE OF ACHIEVEMENT</h1>
-        <p style="letter-spacing:3px; font-weight:800; color:#b58900;">TYPING COMPETENCY RECORD</p>
-        <div style="margin-top:40px;">
-            <p style="font-size:18px;">This is to certify that</p>
+        <h1 style="font-size:45px; margin-bottom:10px; font-weight: 800;">CERTIFICATE OF ACHIEVEMENT</h1>
+        <p style="letter-spacing:5px; font-weight:700; color:#b58900; font-size: 18px;">PROFESSIONAL TYPING COMPETENCY</p>
+        <div style="margin-top:50px;">
+            <p style="font-size:20px;">This prestigious award is presented to</p>
             <span id="cert-display-name" class="cert-name">Candidate</span>
-            <p style="font-size:18px;">has successfully completed a professional performance evaluation.</p>
+            <p style="font-size:20px; max-width: 600px; margin: 20px auto;">For demonstrating exceptional keyboard proficiency and technical accuracy during the Executive Performance Evaluation.</p>
         </div>
-        <div style="display:flex; justify-content:space-around; margin-top:40px; background:#f8fafc; padding:25px; border-radius:12px;">
-            <div><small style="color:#64748b;">NET SPEED</small><h2 id="cert-wpm" style="margin:5px 0;">0 WPM</h2></div>
-            <div><small style="color:#64748b;">ACCURACY</small><h2 id="cert-acc" style="margin:5px 0;">0%</h2></div>
-            <div><small style="color:#64748b;">DATE</small><h2 id="cert-date" style="margin:5px 0;">--/--/--</h2></div>
+        <div style="display:flex; justify-content:space-around; margin-top:50px; background:#f8fafc; padding:30px; border-radius:15px; border: 1px solid #e2e8f0;">
+            <div><small style="color:#64748b; font-weight: 700;">NET SPEED</small><h2 id="cert-wpm" style="margin:8px 0; color: #1e293b;">0 WPM</h2></div>
+            <div><small style="color:#64748b; font-weight: 700;">ACCURACY</small><h2 id="cert-acc" style="margin:8px 0; color: #1e293b;">0%</h2></div>
+            <div><small style="color:#64748b; font-weight: 700;">DATE</small><h2 id="cert-date" style="margin:8px 0; color: #1e293b;">--/--/--</h2></div>
         </div>
-        <div style="margin-top:60px; border-top:1px solid #000; width:220px; margin-left:auto; margin-right:auto;">
-            <p style="font-size:11px; font-weight:900; margin-top:5px;">AUTHORIZED DIGITAL SIGNATURE</p>
+        <div style="margin-top:70px; border-top:2px solid #1e293b; width:250px; margin-left:auto; margin-right:auto;">
+            <p style="font-size:13px; font-weight:900; margin-top:8px; color: #1e293b;">AUTHORIZED EVALUATOR: SASHI</p>
         </div>
     </div>
 </div>
 
 <script>
-    const textToType = "Precision and speed are the hallmarks of a professional developer. Mastery over the keyboard is the first step toward coding excellence.";
+    const textToType = "Coding is not just about writing lines of code; it is about solving complex problems with elegant and efficient solutions.";
     let timeRemaining = 60, isTestActive = false, timerRef;
 
     function init() {
@@ -169,7 +168,7 @@
 
         let elapsed = (60 - timeRemaining) / 60 || 0.01;
         document.getElementById('live-wpm').innerText = Math.round((entry.length / 5) / elapsed);
-        document.getElementById('live-acc').innerText = Math.round((correct / entry.length) * 100) + '%';
+        document.getElementById('live-acc').innerText = Math.round((correct / (entry.length || 1)) * 100) + '%';
         
         if (entry.length >= spans.length) endTest();
     }
@@ -178,13 +177,13 @@
         clearInterval(timerRef);
         isTestActive = false;
         document.getElementById('typing-box').disabled = true;
-        document.getElementById('status-text').innerText = "DONE";
+        document.getElementById('status-text').innerText = "FINISHED";
         document.getElementById('status-text').style.color = "#d4af37";
         document.getElementById('download-cert-btn').style.display = 'inline-block';
     }
 
     function downloadPDF() {
-        const userName = document.getElementById('user-name').value || "Sashi Poorna Sivani";
+        const userName = document.getElementById('user-name').value || "Professional Achiever";
         document.getElementById('cert-display-name').innerText = userName;
         document.getElementById('cert-wpm').innerText = document.getElementById('live-wpm').innerText + " WPM";
         document.getElementById('cert-acc').innerText = document.getElementById('live-acc').innerText;
@@ -193,9 +192,10 @@
         const element = document.getElementById('pdf-wrap');
         const opt = {
             margin: 0,
-            filename: 'Typing_Performance_Certificate.pdf',
-            html2canvas: { scale: 2 },
-            jsPDF: { unit: 'px', format: [980, 700], orientation: 'landscape' }
+            filename: 'Sashi_Typing_Certificate.pdf',
+            image: { type: 'jpeg', quality: 0.98 },
+            html2canvas: { scale: 2, logging: false },
+            jsPDF: { unit: 'px', format: [1000, 720], orientation: 'landscape' }
         };
         html2pdf().from(element).set(opt).save();
     }
