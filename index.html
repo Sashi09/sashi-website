@@ -6,7 +6,6 @@
     <title>Sashi's Typing Analyzer - Executive Edition</title>
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;800&family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
     
     <style>
@@ -40,34 +39,20 @@
         .stat-box label { display: block; font-size: 10px; color: var(--text-muted); }
         .stat-box span { font-size: 20px; font-weight: 800; color: var(--accent-glow); }
 
-        #display-area { background: #000; padding: 20px; border-radius: 10px; font-size: 20px; margin-bottom: 15px; border-left: 4px solid var(--accent-glow); }
-        .type-input { width: 100%; height: 80px; background: #0d1117; border: 1px solid #333; color: white; padding: 15px; border-radius: 10px; font-size: 18px; outline: none; }
+        #display-area { background: #000; padding: 20px; border-radius: 10px; font-size: 20px; margin-bottom: 15px; border-left: 4px solid var(--accent-glow); line-height: 1.5; }
+        .type-input { width: 100%; height: 80px; background: #0d1117; border: 1px solid #333; color: white; padding: 15px; border-radius: 10px; font-size: 18px; outline: none; box-sizing: border-box; }
         
         .btn { padding: 12px 25px; border-radius: 8px; border: none; font-weight: 700; cursor: pointer; transition: 0.3s; margin-top: 15px; }
         .download-btn { background: var(--gold); color: #000; margin-right: 10px; }
         .restart-btn { background: #444; color: white; }
 
-        /* --- CERTIFICATE STYLING (Fixed for PDF) --- */
+        /* --- CERTIFICATE STYLING --- */
         #cert-hidden-container { position: absolute; left: -9999px; top: 0; }
-        #pdf-wrap { 
-            width: 800px; 
-            height: 560px; 
-            background: #ffffff; 
-            padding: 30px; 
-            box-sizing: border-box;
-        }
+        #pdf-wrap { width: 800px; height: 560px; background: #ffffff; padding: 30px; box-sizing: border-box; }
         #pdf-content {
-            border: 10px double #1e293b;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: space-around;
-            text-align: center;
-            color: #1e293b;
-            padding: 20px;
-            box-sizing: border-box;
-            position: relative;
+            border: 10px double #1e293b; height: 100%; display: flex; flex-direction: column;
+            align-items: center; justify-content: space-around; text-align: center;
+            color: #1e293b; padding: 20px; box-sizing: border-box; position: relative;
         }
         .ref-id { position: absolute; top: 15px; right: 20px; font-family: monospace; font-size: 10px; color: #64748b; }
         .cert-header h1 { font-size: 32px; margin: 0; text-transform: uppercase; letter-spacing: 2px; }
@@ -75,8 +60,6 @@
         .cert-metrics { display: flex; justify-content: center; gap: 40px; background: #f8fafc; padding: 15px 40px; border-radius: 10px; }
         .metric-val { font-size: 28px; font-weight: 800; display: block; }
         .metric-label { font-size: 11px; text-transform: uppercase; color: #64748b; }
-        .success { color: var(--success); }
-        .fail { color: #f85149; }
     </style>
 </head>
 <body>
@@ -111,10 +94,10 @@
         <div class="stat-box"><label>Best</label><span id="best-wpm">0</span></div>
     </div>
 
-    <div id="display-area">Ready to test your speed? Start typing below.</div>
+    <div id="display-area">The best way to predict the future is to create it. Success is not final, failure is not fatal.</div>
     <textarea id="typing-box" class="type-input" placeholder="Start typing here..."></textarea>
 
-    <div id="btn-container" style="text-align: center;">
+    <div id="btn-container" class="button-group" style="text-align: center;">
         <button class="btn restart-btn" onclick="location.reload()">New Session</button>
     </div>
 </div>
@@ -122,14 +105,14 @@
 <div id="cert-hidden-container">
     <div id="pdf-wrap">
         <div id="pdf-content">
-            <div class="ref-id">REF ID: <span id="pdf-ref"></span></div>
+            <div class="ref-id" id="pdf-ref-id">REF ID: </div>
             <div class="cert-header">
                 <h1>Certificate of Competency</h1>
                 <p style="color: #d4af37; font-weight: bold; margin: 5px 0;">Official Typing Performance Record</p>
             </div>
             <div>
                 <p style="margin-bottom: 5px;">This document certifies that</p>
-                <div id="cert-display-name" class="cert-name">Candidate</div>
+                <div id="display-name" class="cert-name">Candidate</div>
                 <p style="margin-top: 5px;">has successfully completed the standardized evaluation.</p>
             </div>
             <div class="cert-metrics">
@@ -147,24 +130,57 @@
 
 <script>
     const quotes = {
-        easy: ["The sun is very bright.", "I love to write code."],
-        medium: ["The best way to predict the future is to create it.", "Success is not final, failure is not fatal."],
-        hard: ["Linguistic diversity reflects the rich cultural heritage of civilizations."]
+        easy: ["The sun is very bright.", "I love to write code.", "Small steps lead to big changes."],
+        medium: ["The best way to predict the future is to create it.", "Success is not final, failure is not fatal.", "Efficiency is doing things right; effectiveness is doing the right things."],
+        hard: ["Linguistic diversity reflects the rich cultural heritage of civilizations.", "The implementation of robust cryptographic algorithms ensures data integrity."]
     };
 
-    let timer, timeRemaining, isStarted = false;
+    let timer, timeRemaining, isTestActive = false, isStarted = false;
+    let scores = JSON.parse(localStorage.getItem('sashi_scores_exec')) || [{wpm: 0}];
+
+    // Set initial Best WPM
+    document.getElementById('best-wpm').innerText = scores[0].wpm;
+
+    // --- 1. DETERMINES PERFORMANCE RANK ---
+    function getSkillTier(wpm, accuracy) {
+        const acc = parseInt(accuracy) || 0;
+        const speed = parseInt(wpm) || 0;
+        if (acc < 80) return "NOVICE"; 
+        if (speed >= 80) return "LEGENDARY";
+        if (speed >= 60) return "ELITE";
+        if (speed >= 40) return "PROFESSIONAL";
+        if (speed >= 25) return "INTERMEDIATE";
+        return "TYPIST";
+    }
+
+    // --- 2. GENERATES UNIQUE SECURITY HASH ---
+    function generateVerificationHash(name, wpm) {
+        const salt = "SASHI_ANALYZER_2026";
+        const raw = name + wpm + salt + Math.random();
+        return btoa(raw).substring(0, 10).toUpperCase();
+    }
+
+    function updateText() {
+        const diff = document.getElementById('diff-config').value;
+        const pool = quotes[diff];
+        document.getElementById('display-area').innerText = pool[Math.floor(Math.random() * pool.length)];
+    }
+
+    document.getElementById('diff-config').addEventListener('change', updateText);
 
     function startTest() {
         isStarted = true;
+        isTestActive = true;
         timeRemaining = parseInt(document.getElementById('time-config').value);
         document.getElementById('diff-config').disabled = true;
+        document.getElementById('time-config').disabled = true;
         
         timer = setInterval(() => {
             timeRemaining--;
             document.getElementById('live-timer').innerText = timeRemaining + "s";
             if(timeRemaining <= 0) {
                 clearInterval(timer);
-                finishTest();
+                endTestSession();
             }
         }, 1000);
     }
@@ -172,14 +188,19 @@
     function validate() {
         const text = document.getElementById('display-area').innerText;
         const input = document.getElementById('typing-box').value;
-        const words = input.trim().split(/\s+/).length;
-        const elapsed = (parseInt(document.getElementById('time-config').value) - timeRemaining) / 60 || 0.01;
+        const words = input.trim().split(/\s+/).filter(w => w.length > 0).length;
+        const totalTime = parseInt(document.getElementById('time-config').value);
+        const elapsed = (totalTime - timeRemaining) / 60 || 0.001;
         
-        document.getElementById('live-wpm').innerText = Math.round(words / elapsed);
-        // Simplified accuracy logic for this fix
-        let correct = 0;
-        for(let i=0; i<input.length; i++) { if(input[i] === text[i]) correct++; }
-        document.getElementById('live-acc').innerText = Math.round((correct / (input.length || 1)) * 100) + "%";
+        const wpm = Math.round(words / elapsed);
+        document.getElementById('live-wpm').innerText = wpm;
+
+        let correctChars = 0;
+        for(let i=0; i<input.length; i++) {
+            if(input[i] === text[i]) correctChars++;
+        }
+        const acc = Math.round((correctChars / (input.length || 1)) * 100);
+        document.getElementById('live-acc').innerText = acc + "%";
     }
 
     document.getElementById('typing-box').addEventListener('input', () => {
@@ -187,33 +208,67 @@
         validate();
     });
 
-    function finishTest() {
+    // --- 3. MAIN END SESSION HANDLER ---
+    function endTestSession() {
+        isTestActive = false;
         document.getElementById('typing-box').disabled = true;
-        const wpm = document.getElementById('live-wpm').innerText;
-        const acc = document.getElementById('live-acc').innerText;
-        const diff = document.getElementById('diff-config').value.toUpperCase();
 
-        // Update Hidden Certificate
-        document.getElementById('pdf-ref').innerText = 'SV-' + Math.floor(Math.random()*899999 + 100000);
-        document.getElementById('cert-display-name').innerText = document.getElementById('user-name').value || 'Candidate';
-        document.getElementById('cert-wpm').innerText = wpm;
-        document.getElementById('cert-acc').innerText = acc;
-        document.getElementById('cert-diff').innerText = diff;
+        const finalWpm = document.getElementById('live-wpm').innerText;
+        const finalAcc = document.getElementById('live-acc').innerText;
+        const candidateName = document.getElementById('user-name').value.trim() || 'Valued Candidate';
+
+        const generatedID = 'SV-' + Math.floor(100000 + Math.random() * 900000);
+        const vHash = generateVerificationHash(candidateName, finalWpm);
+        const tier = getSkillTier(finalWpm, finalAcc);
+
+        // Update Local Storage
+        scores.unshift({ wpm: finalWpm, acc: finalAcc, date: new Date().toLocaleDateString() });
+        scores.sort((a,b) => b.wpm - a.wpm); // Keep best at top
+        if (scores.length > 10) scores = scores.slice(0, 10);
+        localStorage.setItem('sashi_scores_exec', JSON.stringify(scores));
+        
+        document.getElementById('best-wpm').innerText = scores[0].wpm;
+
+        // Inject into Certificate
+        document.getElementById('pdf-ref-id').innerText = `${generatedID} | VERIFY: ${vHash}`;
+        document.getElementById('display-name').innerText = candidateName;
+        document.getElementById('cert-wpm').innerText = finalWpm;
+        document.getElementById('cert-acc').innerText = finalAcc;
+        document.getElementById('cert-diff').innerText = tier; 
         document.getElementById('cert-date').innerText = new Date().toLocaleDateString();
 
-        const dlBtn = document.createElement('button');
-        dlBtn.className = 'btn download-btn';
-        dlBtn.innerText = 'DOWNLOAD CERTIFICATE';
-        dlBtn.onclick = () => {
-            const element = document.getElementById('pdf-wrap');
-            html2pdf().set({
-                margin: 0,
-                filename: 'Typing_Certificate.pdf',
-                html2canvas: { scale: 2 },
-                jsPDF: { unit: 'px', format: [800, 560], orientation: 'landscape' }
-            }).from(element).save();
+        // Generate Buttons
+        if (!document.querySelector('.download-btn')) {
+            const actionGroup = document.querySelector('.button-group');
+            
+            const btnPDF = document.createElement('button');
+            btnPDF.className = 'btn download-btn';
+            btnPDF.innerText = 'DOWNLOAD PDF';
+            btnPDF.onclick = downloadPDF;
+
+            const btnPNG = document.createElement('button');
+            btnPNG.className = 'btn download-png-btn'; // Styled via logic class
+            btnPNG.style.background = '#3fb950';
+            btnPNG.style.color = 'white';
+            btnPNG.className = 'btn';
+            btnPNG.innerText = 'PRINT RECORD';
+            btnPNG.onclick = () => window.print();
+
+            actionGroup.prepend(btnPNG);
+            actionGroup.prepend(btnPDF);
+        }
+    }
+
+    function downloadPDF() {
+        const element = document.getElementById('pdf-wrap');
+        const opt = {
+            margin: 0,
+            filename: 'Typing_Certificate.pdf',
+            image: { type: 'jpeg', quality: 0.98 },
+            html2canvas: { scale: 2, useCORS: true },
+            jsPDF: { unit: 'px', format: [800, 560], orientation: 'landscape' }
         };
-        document.getElementById('btn-container').prepend(dlBtn);
+        html2pdf().set(opt).from(element).save();
     }
 </script>
 </body>
