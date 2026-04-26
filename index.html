@@ -97,7 +97,7 @@
         .download-png-btn { background: #333; color: white; margin-right: 8px; }
         .restart-btn { background: #444; color: white; }
 
-        /* Certificate Styling */
+        /* Certificate Styling - Fixed Name Overlap */
         .certificate-panel { display: none; }
         #pdf-wrap { background: #f8fafc; padding: 40px; width: 980px; height: 700px; }
         #pdf-content {
@@ -107,7 +107,20 @@
         .ref-id-label { position: absolute; top: 25px; right: 35px; font-family: monospace; font-size: 12px; color: #64748b; }
         .cert-header { text-align: center; }
         .cert-header h1 { font-size: 40px; color: #0f172a; margin: 0; text-transform: uppercase; }
-        .cert-name-display { font-family: 'Dancing Script', cursive; font-size: 54px; color: #0f172a; border-bottom: 2px solid #e2e8f0; padding: 0 60px; }
+        
+        .cert-body { text-align: center; margin-top: 30px; }
+        
+        .cert-name-display { 
+            font-family: 'Dancing Script', cursive; 
+            font-size: 54px; 
+            color: #0f172a; 
+            border-bottom: 2px solid #e2e8f0; 
+            padding: 0 60px 10px 60px; /* Increased bottom padding */
+            display: inline-block; /* Forces border to respect padding */
+            line-height: 1.2; /* Prevents overlap with script font descenders */
+            margin-bottom: 10px;
+        }
+
         .cert-metrics { display: grid; grid-template-columns: 1fr 1fr 1fr; background: #f1f5f9; padding: 20px; border-radius: 12px; margin: 30px 60px; }
         .metric .m-value { font-size: 34px; font-weight: 800; color: #1e293b; }
 
@@ -186,7 +199,7 @@
                     <h1>Certificate of Competency</h1>
                     <p style="color:var(--gold); font-weight:bold;">Official Performance Record</p>
                 </div>
-                <div class="cert-body" style="text-align:center; margin-top:20px;">
+                <div class="cert-body">
                     <p>This document certifies that</p>
                     <span id="display-name" class="cert-name-display">Candidate</span>
                     <p>has demonstrated proficiency in standardized typing evaluation.</p>
@@ -305,20 +318,29 @@
         document.getElementById('display-name').innerText = document.getElementById('user-name').value || 'Candidate';
         document.getElementById('cert-wpm').innerText = wpm;
         document.getElementById('cert-acc').innerText = acc;
+        document.getElementById('cert-diff').innerText = document.getElementById('diff-config').value.toUpperCase();
         document.getElementById('cert-date').innerText = new Date().toLocaleDateString();
 
-        const btnPDF = document.createElement('button');
-        btnPDF.className = 'btn download-btn';
-        btnPDF.innerText = 'DOWNLOAD PDF';
-        btnPDF.onclick = downloadPDF;
-        document.querySelector('.button-group').prepend(btnPDF);
+        const buttonGroup = document.querySelector('.button-group');
+        if (!document.getElementById('download-pdf-btn')) {
+            const btnPDF = document.createElement('button');
+            btnPDF.id = 'download-pdf-btn';
+            btnPDF.className = 'btn download-btn';
+            btnPDF.innerText = 'DOWNLOAD PDF';
+            btnPDF.onclick = downloadPDF;
+            buttonGroup.prepend(btnPDF);
+        }
     }
 
     function downloadPDF() {
         const sidebar = document.getElementById('cert-sidebar');
         sidebar.style.display = 'block';
         const element = document.getElementById('pdf-wrap');
-        html2pdf().from(element).set({ margin: 0, filename: 'Typing_Certificate.pdf', jsPDF: { orientation: 'landscape', unit: 'px', format: [980, 700] } }).save().then(() => sidebar.style.display = 'none');
+        html2pdf().from(element).set({ 
+            margin: 0, 
+            filename: 'Typing_Certificate.pdf', 
+            jsPDF: { orientation: 'landscape', unit: 'px', format: [980, 700] } 
+        }).save().then(() => sidebar.style.display = 'none');
     }
 
     function updateHistory() {
@@ -332,4 +354,4 @@
     initUI();
 </script>
 </body>
-</html>s
+</html>
