@@ -1,207 +1,278 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sashi's Typing Analyzer - Executive Edition</title>
-    
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;800&family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
-    
-    <style>
-        :root {
-            --bg-dark: #0d1117; --card-bg: #161b22; --accent-glow: #58a6ff;
-            --text-main: #c9d1d9; --text-muted: #8b949e; --success: #3fb950;
-            --gold: #d4af37;
-        }
-        body {
-            background-color: var(--bg-dark); color: var(--text-main);
-            font-family: 'Inter', sans-serif; margin: 0; padding: 60px 0; min-height: 100vh;
-            display: flex; justify-content: center; align-items: flex-start;
-        }
-        .main-layout { width: 95%; max-width: 850px; }
-        .project-box {
-            background: var(--card-bg); border: 1px solid #30363d;
-            border-radius: 16px; padding: 40px; box-shadow: 0 25px 60px rgba(0,0,0,0.7);
-        }
-        .header-container { text-align: center; margin-bottom: 30px; }
-        .logo-class { width: 85px; height: 85px; border-radius: 50%; border: 2px solid var(--accent-glow); object-fit: cover; }
-        .title-glow { color: var(--accent-glow); text-transform: uppercase; letter-spacing: 2px; margin: 15px 0; }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="google-site-verification" content="gIr3_BkkY8XvRLl_n5wVyZizAfjnnSgLXlVduM1ckJM" />
+    <title>Sashi's Typing Analyzer - Executive Edition</title>
+    <meta name="author" content="Katakam Sashi Poorna Sivani">
+    <meta name="description" content="A professional performance analyzer for typing speed and accuracy with certified results.">
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;800&family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg-dark: #0d1117; --card-bg: #161b22; --accent-glow: #58a6ff;
+            --text-main: #c9d1d9; --text-muted: #8b949e; --success: #3fb950;
+            --gold: #d4af37; --slate: #1e293b;
+        }
+        body {
+            background-color: var(--bg-dark); color: var(--text-main);
+            font-family: 'Inter', sans-serif; margin: 0; padding: 20px 0; min-height: 100vh;
+            display: flex; justify-content: center; align-items: center;
+        }
+        .main-layout { width: 95%; max-width: 1000px; padding: 20px; }
+        .project-box {
+            background: var(--card-bg); border: 1px solid #30363d;
+            border-radius: 16px; padding: 35px; box-shadow: 0 20px 50px rgba(0,0,0,0.6);
+        }
+        .name-entry-box {
+            background: var(--bg-dark); border: 1px solid var(--gold);
+            border-radius: 10px; padding: 14px 20px; margin-bottom: 25px;
+            display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+        }
+        .name-entry-box input {
+            flex: 1; min-width: 180px; background: var(--card-bg); border: 1px solid #444;
+            color: white; border-radius: 8px; padding: 8px 14px; outline: none;
+        }
+        .header-container { text-align: center; margin-bottom: 30px; }
+        .logo-class { width: 80px; height: 80px; border-radius: 50%; border: 2px solid var(--accent-glow); }
+        .title-glow { color: var(--accent-glow); text-transform: uppercase; letter-spacing: 2px; }
+        .setup-row { display: flex; gap: 15px; margin: 25px 0; }
+        .custom-select {
+            background: var(--bg-dark); color: var(--accent-glow);
+            border: 1px solid #333; padding: 12px; border-radius: 10px; flex: 1;
+        }
+        .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+        .stat-box { background: var(--bg-dark); padding: 15px; border-radius: 12px; text-align: center; border: 1px solid #333; }
+        .stat-box span { font-size: 24px; font-weight: 800; color: var(--accent-glow); }
+        
+        .timer-bar-wrap { margin: 20px 0; }
+        .timer-bar-outer { background: #1a1a1a; border-radius: 6px; height: 8px; overflow: hidden; }
+        .timer-bar-inner { height: 100%; background: var(--accent-glow); width: 100%; transition: width 1s linear; }
 
-        .name-entry-box {
-            background: rgba(88, 166, 255, 0.05); border: 1px solid #30363d;
-            border-radius: 10px; padding: 15px; margin-bottom: 25px;
-            display: flex; align-items: center; gap: 15px;
-        }
-        .name-entry-box input {
-            flex: 1; background: #000; border: 1px solid var(--accent-glow);
-            color: white; border-radius: 6px; padding: 12px; outline: none; font-size: 16px;
-        }
+        .analysis-section { display: flex; gap: 20px; margin-bottom: 25px; height: 220px; }
+        .chart-box { flex: 2; background: var(--bg-dark); border: 1px solid #30363d; border-radius: 12px; padding: 15px; }
+        .leaderboard-box { flex: 1; background: var(--bg-dark); border: 1px solid #30363d; border-radius: 12px; padding: 15px; overflow-y: auto; }
 
-        .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 25px; }
-        .stat-box { background: var(--bg-dark); padding: 15px; border-radius: 12px; text-align: center; border: 1px solid #333; }
-        .stat-box label { display: block; font-size: 11px; color: var(--text-muted); text-transform: uppercase; margin-bottom: 5px; }
-        .stat-box span { font-size: 24px; font-weight: 800; color: var(--accent-glow); }
-        
-        #display-area {
-            background: #000; padding: 25px; border-radius: 12px; font-size: 22px;
-            min-height: 60px; border-left: 5px solid var(--accent-glow); line-height: 1.6; margin-bottom: 20px;
-        }
-        .type-input {
-            width: 100%; height: 110px; background: var(--bg-dark); border: 2px solid #333;
-            color: white; padding: 15px; border-radius: 12px; font-size: 19px; resize: none; outline: none; box-sizing: border-box;
-        }
-        .type-input:focus { border-color: var(--accent-glow); }
-        .success { color: var(--success); }
-        .fail { color: #f85149; background: rgba(248, 81, 73, 0.1); border-radius: 2px; }
+        #display-area {
+            background: #000; padding: 25px; border-radius: 12px; font-size: 22px;
+            min-height: 50px; border-left: 4px solid var(--accent-glow); line-height: 1.6;
+        }
+        .type-input {
+            width: 100%; height: 100px; background: var(--bg-dark); border: 2px solid #333;
+            color: white; padding: 15px; border-radius: 12px; font-size: 18px; margin-top: 15px;
+        }
+        .success { color: var(--success); }
+        .fail { color: #f85149; background: rgba(248, 81, 73, 0.1); }
+        
+        /* QR Code Styling */
+        .qr-section {
+            text-align: center; margin-top: 30px; padding-top: 20px;
+            border-top: 1px solid #333;
+        }
+        .qr-section h3 { font-size: 16px; color: var(--gold); margin-bottom: 10px; }
+        .qr-section img { border: 4px solid white; border-radius: 8px; }
 
-        .btn { padding: 14px 30px; border-radius: 8px; border: none; font-weight: 700; cursor: pointer; transition: 0.3s; margin: 10px 5px; font-size: 15px; }
-        .restart-btn { background: #333; color: white; }
-        .download-btn { background: var(--gold); color: #000; display: none; } 
+        .btn { padding: 14px 30px; border-radius: 8px; border: none; font-weight: 700; cursor: pointer; margin-top: 10px; }
+        .restart-btn { background: #333; color: white; }
+        .certificate-panel { display: none; }
+        
+        /* PDF styles kept from original */
+        #pdf-wrap { background: #f8fafc; padding: 40px; width: 980px; height: 700px; }
+        #pdf-content { 
+            background: white; color: #1e293b; padding: 40px; border: 12px double #1e293b;
+            width: 900px; height: 620px; position: relative; margin: 0 auto;
+        }
+        .cert-name-display { font-family: 'Dancing Script', cursive; font-size: 54px; border-bottom: 2px solid #e2e8f0; }
 
-        .qr-section { text-align: center; margin-top: 40px; border-top: 1px solid #333; padding-top: 25px; }
-        .qr-section img { border: 5px solid white; border-radius: 10px; background: white; margin: 15px 0; }
-
-        /* Hidden Template for PDF Export */
-        #pdf-wrap { position: absolute; left: -9999px; width: 1000px; height: 720px; background: #fff; }
-        #pdf-content { 
-            padding: 60px; border: 20px double #1e293b; color: #1e293b;
-            width: 920px; height: 640px; text-align: center; box-sizing: border-box; margin: 40px auto;
-        }
-        .cert-name { font-family: 'Dancing Script', cursive; font-size: 65px; border-bottom: 3px solid #cbd5e1; display: inline-block; padding: 0 50px; margin: 25px 0; }
-    </style>
+        @media (max-width: 600px) {
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+            .analysis-section { flex-direction: column; height: auto; }
+        }
+    </style>
 </head>
 <body>
 
 <div class="main-layout">
-    <div class="project-box">
-        <div class="header-container">
-            <img src="logo.png" alt="Sashi Logo" class="logo-class">
-            <h2 class="title-glow">Performance Analyzer</h2>
-        </div>
+    <div class="project-box">
+        <div class="header-container">
+            <img src="logo.png" alt="Sashi Logo" class="logo-class">
+            <h2 class="title-glow">Performance Analyzer</h2>
+        </div>
 
-        <div class="name-entry-box">
-            <label>Candidate Name:</label>
-            <input type="text" id="user-name" placeholder="Name to appear on certificate..." autocomplete="off">
-        </div>
+        <div class="name-entry-box">
+            <label>Full Name:</label>
+            <input type="text" id="user-name" placeholder="Name for certificate..." autocomplete="off">
+        </div>
 
-        <div class="stats-grid">
-            <div class="stat-box"><label>Time</label><span id="live-timer">60s</span></div>
-            <div class="stat-box"><label>WPM</label><span id="live-wpm">0</span></div>
-            <div class="stat-box"><label>Acc%</label><span id="live-acc">0%</span></div>
-            <div class="stat-box"><label>Status</label><span id="status-text" style="font-size: 14px;">READY</span></div>
-        </div>
+        <div class="setup-row">
+            <select id="diff-config" class="custom-select" onchange="loadNewSentence()">
+                <option value="easy">Level: Associate</option>
+                <option value="medium" selected>Level: Professional</option>
+                <option value="hard">Level: Expert</option>
+            </select>
+            <select id="time-config" class="custom-select" onchange="initUI()">
+                <option value="30">30s Test</option>
+                <option value="60" selected>60s Test</option>
+            </select>
+        </div>
 
-        <div id="display-area"></div>
-        <textarea id="typing-box" class="type-input" placeholder="Begin typing here..."></textarea>
+        <div class="stats-grid">
+            <div class="stat-box"><label>Time</label><span id="live-timer">60s</span></div>
+            <div class="stat-box"><label>WPM</label><span id="live-wpm">—</span></div>
+            <div class="stat-box"><label>Acc%</label><span id="live-acc">—</span></div>
+            <div class="stat-box"><label>Best</label><span id="best-wpm">—</span></div>
+        </div>
 
-        <div id="action-area" style="text-align:center; margin-top:25px;">
-            <div id="btn-container">
-                <button id="download-cert-btn" class="btn download-btn" onclick="downloadPDF()">Download Official Certificate</button>
-                <button class="btn restart-btn" onclick="location.reload()">Reset Session</button>
-            </div>
-            
-            <div class="qr-section">
-                <h3 style="font-size:14px; color:var(--gold); letter-spacing: 2px;">SCAN TO TEST YOUR SPEED</h3>
-                <img src="sashi-typing-analyzer-qr.png" alt="QR Code" width="140">
-                <p style="font-size:12px; color:var(--text-muted); margin-top:8px;">Architect: Sashi Poorna Sivani</p>
-            </div>
-        </div>
-    </div>
-</div>
+        <div class="timer-bar-wrap">
+            <div class="timer-bar-outer"><div class="timer-bar-inner" id="timer-bar"></div></div>
+        </div>
 
-<div id="pdf-wrap">
-    <div id="pdf-content">
-        <h1 style="font-size:45px; margin-bottom:10px; font-weight: 800;">CERTIFICATE OF ACHIEVEMENT</h1>
-        <p style="letter-spacing:5px; font-weight:700; color:#b58900; font-size: 18px;">PROFESSIONAL TYPING COMPETENCY</p>
-        <div style="margin-top:50px;">
-            <p style="font-size:20px;">This prestigious award is presented to</p>
-            <span id="cert-display-name" class="cert-name">Candidate</span>
-            <p style="font-size:20px; max-width: 600px; margin: 20px auto;">For demonstrating exceptional keyboard proficiency and technical accuracy during the Executive Performance Evaluation.</p>
-        </div>
-        <div style="display:flex; justify-content:space-around; margin-top:50px; background:#f8fafc; padding:30px; border-radius:15px; border: 1px solid #e2e8f0;">
-            <div><small style="color:#64748b; font-weight: 700;">NET SPEED</small><h2 id="cert-wpm" style="margin:8px 0; color: #1e293b;">0 WPM</h2></div>
-            <div><small style="color:#64748b; font-weight: 700;">ACCURACY</small><h2 id="cert-acc" style="margin:8px 0; color: #1e293b;">0%</h2></div>
-            <div><small style="color:#64748b; font-weight: 700;">DATE</small><h2 id="cert-date" style="margin:8px 0; color: #1e293b;">--/--/--</h2></div>
-        </div>
-        <div style="margin-top:70px; border-top:2px solid #1e293b; width:250px; margin-left:auto; margin-right:auto;">
-            <p style="font-size:13px; font-weight:900; margin-top:8px; color: #1e293b;">AUTHORIZED EVALUATOR: SASHI</p>
-        </div>
-    </div>
+        <div class="analysis-section">
+            <div class="chart-box"><canvas id="speedChart"></canvas></div>
+            <div class="leaderboard-box">
+                <div style="font-size:12px; color:var(--accent-glow); font-weight:800; margin-bottom:10px;">TOP SCORES</div>
+                <div id="leaderboard-list"></div>
+            </div>
+        </div>
+
+        <div id="display-area"></div>
+        <textarea id="typing-box" class="type-input" placeholder="Start typing here to begin..."></textarea>
+
+        <div id="action-area" style="text-align:center; margin-top:20px;">
+            <p style="font-size:12px; color:var(--text-muted);">Architect: <span style="color:var(--accent-glow);">Sashi Poorna Sivani</span></p>
+            <div class="button-group">
+                <button class="btn restart-btn" onclick="location.reload()">Reset Session</button>
+            </div>
+            
+            <div class="qr-section">
+                <h3>Scan to test your speed!</h3>
+                <img src="sashi-typing-analyzer-qr.png" alt="QR Code for Sashi's Typing Analyzer" width="150">
+            </div>
+        </div>
+    </div>
+
+    <div id="cert-sidebar" class="certificate-panel">
+        <div id="pdf-wrap">
+            <div id="pdf-content">
+                <div class="cert-header">
+                    <h1>Certificate of Competency</h1>
+                    <p>Official Performance Record</p>
+                </div>
+                <div style="text-align:center; margin-top:40px;">
+                    <p>This certifies that</p>
+                    <span id="display-name" class="cert-name-display">Candidate</span>
+                    <p>has completed the professional typing evaluation.</p>
+                </div>
+                <div style="display:flex; justify-content:space-around; margin-top:40px; background:#f8fafc; padding:20px;">
+                    <div><small>WPM</small><h2 id="cert-wpm">0</h2></div>
+                    <div><small>ACCURACY</small><h2 id="cert-acc">0%</h2></div>
+                    <div><small>LEVEL</small><h2 id="cert-diff">PRO</h2></div>
+                </div>
+                <div style="position:absolute; bottom:40px; width:100%; left:0; padding:0 60px; box-sizing:border-box; display:flex; justify-content:space-between;">
+                    <div style="border-top:2px solid #000; padding-top:5px;">Project Architect</div>
+                    <div id="cert-date">Date</div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
 <script>
-    const textToType = "Coding is not just about writing lines of code; it is about solving complex problems with elegant and efficient solutions.";
-    let timeRemaining = 60, isTestActive = false, timerRef;
+    const quotes = {
+        easy: ["The sun is bright.", "Cats like to sleep.", "I love coding.", "Apples are red."],
+        medium: ["Success is not final, failure is not fatal.", "Dream big and dare to fail.", "Small steps lead to big results."],
+        hard: ["Quantum mechanics describes particle behavior.", "Linguistic diversity reflects cultural heritage."]
+    };
 
-    function init() {
-        document.getElementById('display-area').innerHTML = textToType.split('').map(c => `<span>${c}</span>`).join('');
-    }
+    let timeRemaining, isTestActive = false, timerRef, totalSeconds;
+    let speedChart, scores = JSON.parse(localStorage.getItem('sashi_scores_exec')) || [];
 
-    document.getElementById('typing-box').addEventListener('input', () => {
-        if (!isTestActive && document.getElementById('typing-box').value.length > 0) startTest();
-        if (isTestActive) validate();
-    });
+    function initUI() {
+        const best = scores.length > 0 ? scores[0].wpm : '—';
+        document.getElementById('best-wpm').innerText = best;
+        document.getElementById('live-timer').innerText = document.getElementById('time-config').value + 's';
+        document.getElementById('live-wpm').innerText = '—';
+        document.getElementById('live-acc').innerText = '—';
+        document.getElementById('timer-bar').style.width = '100%';
+        updateHistory();
+        initChart();
+        loadNewSentence();
+    }
 
-    function startTest() {
-        isTestActive = true;
-        document.getElementById('status-text').innerText = "LIVE";
-        document.getElementById('status-text').style.color = "#3fb950";
-        timerRef = setInterval(() => {
-            timeRemaining--;
-            document.getElementById('live-timer').innerText = timeRemaining + 's';
-            if (timeRemaining <= 0) endTest();
-        }, 1000);
-    }
+    function initChart() {
+        const ctx = document.getElementById('speedChart').getContext('2d');
+        if (speedChart) speedChart.destroy();
+        speedChart = new Chart(ctx, {
+            type: 'line',
+            data: { labels: [0], datasets: [{ data: [0], borderColor: '#58a6ff', fill: true, backgroundColor: 'rgba(88,166,255,0.1)', tension: 0.4 }] },
+            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
+        });
+    }
 
-    function validate() {
-        const spans = document.querySelectorAll('#display-area span');
-        const entry = document.getElementById('typing-box').value.split('');
-        let correct = 0;
+    function loadNewSentence() {
+        const diff = document.getElementById('diff-config').value;
+        const sentence = quotes[diff][Math.floor(Math.random() * quotes[diff].length)];
+        document.getElementById('display-area').innerHTML = sentence.split('').map(c => `<span>${c}</span>`).join('');
+        document.getElementById('typing-box').value = '';
+    }
 
-        spans.forEach((s, i) => {
-            if (entry[i] == null) s.className = '';
-            else if (entry[i] === s.innerText) { s.className = 'success'; correct++; }
-            else s.className = 'fail';
-        });
+    document.getElementById('typing-box').addEventListener('input', () => {
+        if (!isTestActive && document.getElementById('typing-box').value.length > 0) startTest();
+        if (isTestActive) validate();
+    });
 
-        let elapsed = (60 - timeRemaining) / 60 || 0.01;
-        document.getElementById('live-wpm').innerText = Math.round((entry.length / 5) / elapsed);
-        document.getElementById('live-acc').innerText = Math.round((correct / (entry.length || 1)) * 100) + '%';
-        
-        if (entry.length >= spans.length) endTest();
-    }
+    function startTest() {
+        isTestActive = true;
+        totalSeconds = parseInt(document.getElementById('time-config').value);
+        timeRemaining = totalSeconds;
+        timerRef = setInterval(() => {
+            timeRemaining--;
+            document.getElementById('live-timer').innerText = timeRemaining + 's';
+            document.getElementById('timer-bar').style.width = (timeRemaining / totalSeconds * 100) + '%';
+            if (timeRemaining <= 0) { clearInterval(timerRef); endTest(); }
+        }, 1000);
+    }
 
-    function endTest() {
-        clearInterval(timerRef);
-        isTestActive = false;
-        document.getElementById('typing-box').disabled = true;
-        document.getElementById('status-text').innerText = "FINISHED";
-        document.getElementById('status-text').style.color = "#d4af37";
-        document.getElementById('download-cert-btn').style.display = 'inline-block';
-    }
+    function validate() {
+        const spans = document.getElementById('display-area').querySelectorAll('span');
+        const entry = document.getElementById('typing-box').value.split('');
+        let correct = 0;
+        spans.forEach((s, i) => {
+            if (entry[i] == null) s.className = '';
+            else if (entry[i] === s.innerText) { s.className = 'success'; correct++; }
+            else s.className = 'fail';
+        });
+        let elapsed = (totalSeconds - timeRemaining) / 60 || 0.01;
+        document.getElementById('live-wpm').innerText = Math.round((entry.length / 5) / elapsed);
+        document.getElementById('live-acc').innerText = Math.round((correct / entry.length) * 100) + '%';
+        if (entry.length >= spans.length) loadNewSentence();
+    }
 
-    function downloadPDF() {
-        const userName = document.getElementById('user-name').value || "Professional Achiever";
-        document.getElementById('cert-display-name').innerText = userName;
-        document.getElementById('cert-wpm').innerText = document.getElementById('live-wpm').innerText + " WPM";
-        document.getElementById('cert-acc').innerText = document.getElementById('live-acc').innerText;
-        document.getElementById('cert-date').innerText = new Date().toLocaleDateString();
+    function endTest() {
+        isTestActive = false;
+        document.getElementById('typing-box').disabled = true;
+        const wpm = document.getElementById('live-wpm').innerText;
+        const acc = document.getElementById('live-acc').innerText;
+        scores.unshift({ wpm, acc, date: new Date().toLocaleDateString() });
+        localStorage.setItem('sashi_scores_exec', JSON.stringify(scores.slice(0, 5)));
+        updateHistory();
+        alert(`Test Over! WPM: ${wpm}, Accuracy: ${acc}`);
+    }
 
-        const element = document.getElementById('pdf-wrap');
-        const opt = {
-            margin: 0,
-            filename: 'Sashi_Typing_Certificate.pdf',
-            image: { type: 'jpeg', quality: 0.98 },
-            html2canvas: { scale: 2, logging: false },
-            jsPDF: { unit: 'px', format: [1000, 720], orientation: 'landscape' }
-        };
-        html2pdf().from(element).set(opt).save();
-    }
+    function updateHistory() {
+        document.getElementById('leaderboard-list').innerHTML = scores.map(s => 
+            `<div style="display:flex; justify-content:space-between; padding:5px 0; border-bottom:1px solid #333;">
+                <b>${s.wpm} WPM</b> <span>${s.acc} Acc</span>
+            </div>`).join('');
+    }
 
-    init();
+    initUI();
 </script>
-
 </body>
 </html>
+once check this if there are any errors rectify and give total code without errors
