@@ -34,20 +34,22 @@
             border-radius: 10px; padding: 14px 20px; margin-bottom: 25px;
             display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
         }
+        .name-entry-box label { font-size: 13px; color: var(--text-muted); }
         .name-entry-box input {
             flex: 1; min-width: 180px; background: var(--card-bg); border: 1px solid #444;
             color: white; border-radius: 8px; padding: 8px 14px; outline: none;
         }
         .header-container { text-align: center; margin-bottom: 30px; }
-        .logo-class { width: 80px; height: 80px; border-radius: 50%; border: 2px solid var(--accent-glow); }
+        .logo-class { width: 80px; height: 80px; border-radius: 50%; border: 2px solid var(--accent-glow); object-fit: cover; }
         .title-glow { color: var(--accent-glow); text-transform: uppercase; letter-spacing: 2px; }
         .setup-row { display: flex; gap: 15px; margin: 25px 0; }
         .custom-select {
             background: var(--bg-dark); color: var(--accent-glow);
-            border: 1px solid #333; padding: 12px; border-radius: 10px; flex: 1;
+            border: 1px solid #333; padding: 12px; border-radius: 10px; flex: 1; cursor: pointer;
         }
         .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
         .stat-box { background: var(--bg-dark); padding: 15px; border-radius: 12px; text-align: center; border: 1px solid #333; }
+        .stat-box label { display: block; font-size: 10px; color: var(--text-muted); text-transform: uppercase; }
         .stat-box span { font-size: 24px; font-weight: 800; color: var(--accent-glow); }
         
         .timer-bar-wrap { margin: 20px 0; }
@@ -60,38 +62,39 @@
 
         #display-area {
             background: #000; padding: 25px; border-radius: 12px; font-size: 22px;
-            min-height: 50px; border-left: 4px solid var(--accent-glow); line-height: 1.6;
+            min-height: 50px; border-left: 4px solid var(--accent-glow); line-height: 1.6; word-wrap: break-word;
         }
         .type-input {
             width: 100%; height: 100px; background: var(--bg-dark); border: 2px solid #333;
-            color: white; padding: 15px; border-radius: 12px; font-size: 18px; margin-top: 15px;
+            color: white; padding: 15px; border-radius: 12px; font-size: 18px; margin-top: 15px; resize: none;
         }
         .success { color: var(--success); }
         .fail { color: #f85149; background: rgba(248, 81, 73, 0.1); }
         
-        /* QR Code Styling */
         .qr-section {
             text-align: center; margin-top: 30px; padding-top: 20px;
             border-top: 1px solid #333;
         }
-        .qr-section h3 { font-size: 16px; color: var(--gold); margin-bottom: 10px; }
-        .qr-section img { border: 4px solid white; border-radius: 8px; }
+        .qr-section h3 { font-size: 14px; color: var(--gold); margin-bottom: 10px; text-transform: uppercase; }
+        .qr-section img { border: 4px solid white; border-radius: 8px; background: white; }
 
-        .btn { padding: 14px 30px; border-radius: 8px; border: none; font-weight: 700; cursor: pointer; margin-top: 10px; }
+        .btn { padding: 12px 24px; border-radius: 8px; border: none; font-weight: 700; cursor: pointer; margin: 5px; transition: 0.2s; }
         .restart-btn { background: #333; color: white; }
+        .download-btn { background: var(--gold); color: black; }
         .certificate-panel { display: none; }
         
-        /* PDF styles kept from original */
-        #pdf-wrap { background: #f8fafc; padding: 40px; width: 980px; height: 700px; }
+        /* PDF Template Styles */
+        #pdf-wrap { background: #f8fafc; padding: 40px; width: 980px; height: 700px; box-sizing: border-box; }
         #pdf-content { 
-            background: white; color: #1e293b; padding: 40px; border: 12px double #1e293b;
-            width: 900px; height: 620px; position: relative; margin: 0 auto;
+            background: white; color: #1e293b; padding: 60px; border: 15px double #1e293b;
+            width: 900px; height: 620px; position: relative; margin: 0 auto; box-sizing: border-box; text-align: center;
         }
-        .cert-name-display { font-family: 'Dancing Script', cursive; font-size: 54px; border-bottom: 2px solid #e2e8f0; }
+        .cert-name-display { font-family: 'Dancing Script', cursive; font-size: 60px; color: #0f172a; border-bottom: 2px solid #e2e8f0; padding: 0 40px; display: inline-block; }
 
         @media (max-width: 600px) {
             .stats-grid { grid-template-columns: repeat(2, 1fr); }
             .analysis-section { flex-direction: column; height: auto; }
+            .name-entry-box { flex-direction: column; align-items: flex-start; }
         }
     </style>
 </head>
@@ -105,8 +108,8 @@
         </div>
 
         <div class="name-entry-box">
-            <label>Full Name:</label>
-            <input type="text" id="user-name" placeholder="Name for certificate..." autocomplete="off">
+            <label>Full Name for Certificate:</label>
+            <input type="text" id="user-name" placeholder="Enter name..." autocomplete="off">
         </div>
 
         <div class="setup-row">
@@ -116,16 +119,16 @@
                 <option value="hard">Level: Expert</option>
             </select>
             <select id="time-config" class="custom-select" onchange="initUI()">
-                <option value="30">30s Test</option>
-                <option value="60" selected>60s Test</option>
+                <option value="30">30s Duration</option>
+                <option value="60" selected>60s Duration</option>
             </select>
         </div>
 
         <div class="stats-grid">
-            <div class="stat-box"><label>Time</label><span id="live-timer">60s</span></div>
+            <div class="stat-box"><label>Remaining</label><span id="live-timer">60s</span></div>
             <div class="stat-box"><label>WPM</label><span id="live-wpm">—</span></div>
-            <div class="stat-box"><label>Acc%</label><span id="live-acc">—</span></div>
-            <div class="stat-box"><label>Best</label><span id="best-wpm">—</span></div>
+            <div class="stat-box"><label>Accuracy</label><span id="live-acc">—</span></div>
+            <div class="stat-box"><label>Session Best</label><span id="best-wpm">—</span></div>
         </div>
 
         <div class="timer-bar-wrap">
@@ -135,23 +138,23 @@
         <div class="analysis-section">
             <div class="chart-box"><canvas id="speedChart"></canvas></div>
             <div class="leaderboard-box">
-                <div style="font-size:12px; color:var(--accent-glow); font-weight:800; margin-bottom:10px;">TOP SCORES</div>
+                <div style="font-size:11px; color:var(--accent-glow); font-weight:800; margin-bottom:10px; text-transform:uppercase;">Recent Performance</div>
                 <div id="leaderboard-list"></div>
             </div>
         </div>
 
         <div id="display-area"></div>
-        <textarea id="typing-box" class="type-input" placeholder="Start typing here to begin..."></textarea>
+        <textarea id="typing-box" class="type-input" placeholder="Start typing here to begin test..."></textarea>
 
         <div id="action-area" style="text-align:center; margin-top:20px;">
-            <p style="font-size:12px; color:var(--text-muted);">Architect: <span style="color:var(--accent-glow);">Sashi Poorna Sivani</span></p>
-            <div class="button-group">
-                <button class="btn restart-btn" onclick="location.reload()">Reset Session</button>
+            <p style="font-size:12px; color:var(--text-muted);">System Architect: <span style="color:var(--accent-glow);">Sashi Poorna Sivani</span></p>
+            <div class="button-group" id="btn-container">
+                <button class="btn restart-btn" onclick="location.reload()">New Session</button>
             </div>
             
             <div class="qr-section">
                 <h3>Scan to test your speed!</h3>
-                <img src="sashi-typing-analyzer-qr.png" alt="QR Code for Sashi's Typing Analyzer" width="150">
+                <img src="sashi-typing-analyzer-qr.png" alt="QR Code" width="130">
             </div>
         </div>
     </div>
@@ -159,23 +162,21 @@
     <div id="cert-sidebar" class="certificate-panel">
         <div id="pdf-wrap">
             <div id="pdf-content">
-                <div class="cert-header">
-                    <h1>Certificate of Competency</h1>
-                    <p>Official Performance Record</p>
-                </div>
-                <div style="text-align:center; margin-top:40px;">
-                    <p>This certifies that</p>
+                <h1 style="font-size:42px; text-transform:uppercase; margin:0;">Certificate of Competency</h1>
+                <p style="letter-spacing:3px; color:var(--gold); font-weight:bold;">OFFICIAL PERFORMANCE RECORD</p>
+                <div style="margin-top:50px;">
+                    <p style="font-size:18px;">This document certifies that</p>
                     <span id="display-name" class="cert-name-display">Candidate</span>
-                    <p>has completed the professional typing evaluation.</p>
+                    <p style="font-size:18px; margin-top:20px;">has demonstrated excellence in standardized typing evaluation.</p>
                 </div>
-                <div style="display:flex; justify-content:space-around; margin-top:40px; background:#f8fafc; padding:20px;">
-                    <div><small>WPM</small><h2 id="cert-wpm">0</h2></div>
-                    <div><small>ACCURACY</small><h2 id="cert-acc">0%</h2></div>
-                    <div><small>LEVEL</small><h2 id="cert-diff">PRO</h2></div>
+                <div style="display:flex; justify-content:space-around; margin-top:50px; background:#f1f5f9; padding:30px; border-radius:10px;">
+                    <div><small>WORDS PER MINUTE</small><h2 id="cert-wpm" style="font-size:36px; margin:5px 0;">0</h2></div>
+                    <div><small>ACCURACY RATE</small><h2 id="cert-acc" style="font-size:36px; margin:5px 0;">0%</h2></div>
+                    <div><small>SKILL TIER</small><h2 id="cert-diff" style="font-size:36px; margin:5px 0;">PRO</h2></div>
                 </div>
-                <div style="position:absolute; bottom:40px; width:100%; left:0; padding:0 60px; box-sizing:border-box; display:flex; justify-content:space-between;">
-                    <div style="border-top:2px solid #000; padding-top:5px;">Project Architect</div>
-                    <div id="cert-date">Date</div>
+                <div style="position:absolute; bottom:60px; width:80%; left:10%; display:flex; justify-content:space-between; align-items:flex-end;">
+                    <div style="text-align:center;"><p style="font-family:'Dancing Script'; font-size:24px; margin:0;">K. Sivani</p><div style="border-top:2px solid #000; width:150px; padding-top:5px; font-weight:800; font-size:12px;">PROJECT ARCHITECT</div></div>
+                    <div style="text-align:center;"><p id="cert-date" style="font-weight:800; margin:0;">Date</p><div style="border-top:2px solid #000; width:150px; padding-top:5px; font-weight:800; font-size:12px;">ISSUANCE DATE</div></div>
                 </div>
             </div>
         </div>
@@ -184,18 +185,19 @@
 
 <script>
     const quotes = {
-        easy: ["The sun is bright.", "Cats like to sleep.", "I love coding.", "Apples are red."],
-        medium: ["Success is not final, failure is not fatal.", "Dream big and dare to fail.", "Small steps lead to big results."],
-        hard: ["Quantum mechanics describes particle behavior.", "Linguistic diversity reflects cultural heritage."]
+        easy: ["The sun is very bright today.", "I enjoy learning new things.", "The cat sat on the mat.", "Coding is a fun hobby."],
+        medium: ["Success is not final, failure is not fatal: it is the courage to continue that counts.", "The future belongs to those who believe in the beauty of their dreams.", "Action is the foundational key to all success."],
+        hard: ["Linguistic diversity represents the vast richness of cultural heritage across civilizations.", "Quantum mechanics provides a complex mathematical description of particle behavior."]
     };
 
     let timeRemaining, isTestActive = false, timerRef, totalSeconds;
     let speedChart, scores = JSON.parse(localStorage.getItem('sashi_scores_exec')) || [];
 
     function initUI() {
-        const best = scores.length > 0 ? scores[0].wpm : '—';
+        const best = scores.length > 0 ? Math.max(...scores.map(s => s.wpm)) : '—';
         document.getElementById('best-wpm').innerText = best;
-        document.getElementById('live-timer').innerText = document.getElementById('time-config').value + 's';
+        totalSeconds = parseInt(document.getElementById('time-config').value);
+        document.getElementById('live-timer').innerText = totalSeconds + 's';
         document.getElementById('live-wpm').innerText = '—';
         document.getElementById('live-acc').innerText = '—';
         document.getElementById('timer-bar').style.width = '100%';
@@ -210,7 +212,7 @@
         speedChart = new Chart(ctx, {
             type: 'line',
             data: { labels: [0], datasets: [{ data: [0], borderColor: '#58a6ff', fill: true, backgroundColor: 'rgba(88,166,255,0.1)', tension: 0.4 }] },
-            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
+            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true } } }
         });
     }
 
@@ -228,46 +230,93 @@
 
     function startTest() {
         isTestActive = true;
-        totalSeconds = parseInt(document.getElementById('time-config').value);
         timeRemaining = totalSeconds;
+        document.getElementById('diff-config').disabled = true;
+        document.getElementById('time-config').disabled = true;
+
         timerRef = setInterval(() => {
             timeRemaining--;
             document.getElementById('live-timer').innerText = timeRemaining + 's';
             document.getElementById('timer-bar').style.width = (timeRemaining / totalSeconds * 100) + '%';
+            
+            // Update chart data
+            const currentWPM = parseInt(document.getElementById('live-wpm').innerText) || 0;
+            speedChart.data.labels.push(totalSeconds - timeRemaining);
+            speedChart.data.datasets[0].data.push(currentWPM);
+            speedChart.update();
+
             if (timeRemaining <= 0) { clearInterval(timerRef); endTest(); }
         }, 1000);
     }
 
     function validate() {
-        const spans = document.getElementById('display-area').querySelectorAll('span');
+        const displayArea = document.getElementById('display-area');
+        const spans = displayArea.querySelectorAll('span');
         const entry = document.getElementById('typing-box').value.split('');
         let correct = 0;
+
         spans.forEach((s, i) => {
             if (entry[i] == null) s.className = '';
             else if (entry[i] === s.innerText) { s.className = 'success'; correct++; }
             else s.className = 'fail';
         });
-        let elapsed = (totalSeconds - timeRemaining) / 60 || 0.01;
-        document.getElementById('live-wpm').innerText = Math.round((entry.length / 5) / elapsed);
-        document.getElementById('live-acc').innerText = Math.round((correct / entry.length) * 100) + '%';
+
+        let elapsed = (totalSeconds - timeRemaining) / 60;
+        if (elapsed > 0) {
+            const wpm = Math.round((entry.length / 5) / elapsed);
+            document.getElementById('live-wpm').innerText = wpm;
+            document.getElementById('live-acc').innerText = Math.round((correct / entry.length) * 100) + '%';
+        }
+
         if (entry.length >= spans.length) loadNewSentence();
     }
 
     function endTest() {
         isTestActive = false;
         document.getElementById('typing-box').disabled = true;
-        const wpm = document.getElementById('live-wpm').innerText;
-        const acc = document.getElementById('live-acc').innerText;
-        scores.unshift({ wpm, acc, date: new Date().toLocaleDateString() });
-        localStorage.setItem('sashi_scores_exec', JSON.stringify(scores.slice(0, 5)));
+        const finalWpm = document.getElementById('live-wpm').innerText;
+        const finalAcc = document.getElementById('live-acc').innerText;
+        const name = document.getElementById('user-name').value.trim() || "Sashi Poorna Sivani";
+
+        scores.unshift({ wpm: finalWpm, acc: finalAcc, date: new Date().toLocaleDateString() });
+        localStorage.setItem('sashi_scores_exec', JSON.stringify(scores.slice(0, 10)));
+        
+        // Setup Certificate Data
+        document.getElementById('display-name').innerText = name;
+        document.getElementById('cert-wpm').innerText = finalWpm;
+        document.getElementById('cert-acc').innerText = finalAcc;
+        document.getElementById('cert-diff').innerText = document.getElementById('diff-config').value.toUpperCase();
+        document.getElementById('cert-date').innerText = new Date().toLocaleDateString();
+
+        // Show Download Button
+        const dlBtn = document.createElement('button');
+        dlBtn.className = 'btn download-btn';
+        dlBtn.innerText = 'DOWNLOAD CERTIFICATE (PDF)';
+        dlBtn.onclick = downloadPDF;
+        document.getElementById('btn-container').prepend(dlBtn);
+        
         updateHistory();
-        alert(`Test Over! WPM: ${wpm}, Accuracy: ${acc}`);
+    }
+
+    function downloadPDF() {
+        const element = document.getElementById('pdf-wrap');
+        const panel = document.getElementById('cert-sidebar');
+        panel.style.display = 'block';
+        const opt = {
+            margin: 0,
+            filename: 'Typing_Competency_Certificate.pdf',
+            image: { type: 'jpeg', quality: 0.98 },
+            html2canvas: { scale: 2 },
+            jsPDF: { unit: 'px', format: [980, 700], orientation: 'landscape' }
+        };
+        html2pdf().from(element).set(opt).save().then(() => { panel.style.display = 'none'; });
     }
 
     function updateHistory() {
-        document.getElementById('leaderboard-list').innerHTML = scores.map(s => 
-            `<div style="display:flex; justify-content:space-between; padding:5px 0; border-bottom:1px solid #333;">
-                <b>${s.wpm} WPM</b> <span>${s.acc} Acc</span>
+        document.getElementById('leaderboard-list').innerHTML = scores.slice(0, 5).map(s => 
+            `<div style="display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid #333; font-size:13px;">
+                <b style="color:var(--accent-glow);">${s.wpm} WPM</b> 
+                <span style="color:var(--text-muted);">${s.acc} Accuracy</span>
             </div>`).join('');
     }
 
