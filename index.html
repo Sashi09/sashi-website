@@ -512,17 +512,20 @@
 
     // FIX 5: leaderboard with rank numbers
     function updateHistory() {
-        const rankSymbols = ['🥇', '🥈', '🥉'];
-        document.getElementById('leaderboard-list').innerHTML = scores.slice(0, 5).map((s, i) => {
-            const rank = rankSymbols[i] || `#${i + 1}`;
-            return `<div style="display:flex; align-items:center; gap:8px; padding:7px 0; border-bottom:1px solid #333;">
-                <span style="font-size:13px; min-width:22px;">${rank}</span>
-                <b style="color:var(--accent-glow); flex:1;">${s.wpm} WPM</b>
-                <span style="color:#8b949e; font-size:12px;">${s.date}</span>
-            </div>`;
-        }).join('');
-    }
+    const rankSymbols = ['🥇', '🥈', '🥉'];
+    
+    // Sort scores by WPM in descending order
+    const topScores = scores.sort((a, b) => b.wpm - a.wpm).slice(0, 5);
 
+    document.getElementById('leaderboard-list').innerHTML = topScores.map((s, i) => {
+        const rank = rankSymbols[i] || `#${i + 1}`;
+        return `<div style="display:flex; align-items:center; gap:8px; padding:7px 0; border-bottom:1px solid #333;">
+            <span style="font-size:13px; min-width:22px;">${rank}</span>
+            <b style="color:var(--accent-glow); flex:1;">${s.wpm} WPM</b>
+            <span style="color:#8b949e; font-size:12px;">${s.date}</span>
+        </div>`;
+    }).join('');
+}
     initUI();
 </script>
 </body>
