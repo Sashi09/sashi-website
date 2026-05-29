@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" type="image/png" href="logo.png">
+    <link rel="icon" type="image/png" href="/logo.png" sizes="192x192">
     <meta name="google-site-verification" content="gIr3_BkkY8XvRLl_n5wVyZizAfjnnSgLXlVduM1ckJM" />
     <title>Sashi's Typing Analyzer - Executive Edition</title>
     <meta name="author" content="Katakam Sashi Poorna Sivani">
@@ -325,10 +325,8 @@
         const best = scores.length > 0 ? scores[0].wpm : '—';
         document.getElementById('best-wpm').innerText = best;
         document.getElementById('live-timer').innerText = document.getElementById('time-config').value + 's';
-        // FIX 1: reset to dashes on new session
         document.getElementById('live-wpm').innerText = '—';
         document.getElementById('live-acc').innerText = '—';
-        // FIX 4: reset progress bar
         document.getElementById('timer-bar').style.width = '100%';
         document.getElementById('timer-bar').style.backgroundColor = 'var(--accent-glow)';
         updateHistory();
@@ -387,7 +385,6 @@
             timeRemaining--;
             document.getElementById('live-timer').innerText = timeRemaining + 's';
 
-            // FIX 4: update progress bar width and colour
             const pct = (timeRemaining / totalSeconds) * 100;
             const bar = document.getElementById('timer-bar');
             bar.style.width = pct + '%';
@@ -401,7 +398,6 @@
 
             speedChart.data.labels.push(totalSeconds - timeRemaining);
             
-            // ✅ FIXED BUG HERE: Checking safely for the dashboard dash character "—" before casting
             const currentLiveWpm = document.getElementById('live-wpm').innerText;
             speedChart.data.datasets[0].data.push(currentLiveWpm === '—' ? 0 : (parseInt(currentLiveWpm) || 0));
             
@@ -445,7 +441,6 @@
 
         document.getElementById('pdf-ref-id').innerText = generatedID;
 
-        // FIX 2: read name from top input
         const candidateName = document.getElementById('user-name').value.trim() || 'Sashi Poorna Sivani';
         document.getElementById('display-name').innerText = candidateName;
 
@@ -455,13 +450,11 @@
         document.getElementById('cert-date').innerText = new Date().toLocaleDateString();
 
         if (!document.querySelector('.download-btn')) {
-            // PDF button
             const btnPDF = document.createElement('button');
             btnPDF.className = 'btn download-btn';
             btnPDF.innerText = 'DOWNLOAD PDF';
             btnPDF.onclick = downloadPDF;
 
-            // FIX 3: PNG download button
             const btnPNG = document.createElement('button');
             btnPNG.className = 'btn download-png-btn';
             btnPNG.innerText = 'DOWNLOAD PNG';
@@ -489,7 +482,6 @@
         html2pdf().from(element).set(opt).save().then(() => { sidebar.style.display = 'none'; });
     }
 
-    // FIX 3: PNG download using html2canvas
     function downloadPNG() {
         const candidateName = document.getElementById('user-name').value.trim() || 'Sashi Poorna Sivani';
         document.getElementById('display-name').innerText = candidateName;
@@ -509,11 +501,8 @@
         });
     }
 
-    // FIX 5: leaderboard with rank numbers
     function updateHistory() {
         const rankSymbols = ['🥇', '🥈', '🥉'];
-        
-        // Sort scores by WPM in descending order
         const topScores = scores.sort((a, b) => b.wpm - a.wpm).slice(0, 5);
 
         document.getElementById('leaderboard-list').innerHTML = topScores.map((s, i) => {
