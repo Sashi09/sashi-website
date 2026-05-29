@@ -221,7 +221,6 @@
             <h2 class="title-glow">Performance Analyzer</h2>
         </div>
 
-        <!-- FIX 2: Name input moved to TOP, always visible -->
         <div class="name-entry-box">
             <label>Your name for certificate:</label>
             <input type="text" id="user-name" placeholder="Enter your full name..." autocomplete="off">
@@ -241,13 +240,11 @@
 
         <div class="stats-grid">
             <div class="stat-box"><label>Remaining</label><span id="live-timer">60s</span></div>
-            <!-- FIX 1: Show dashes instead of 0 on load -->
             <div class="stat-box"><label>Current WPM</label><span id="live-wpm">—</span></div>
             <div class="stat-box"><label>Accuracy</label><span id="live-acc">—</span></div>
             <div class="stat-box"><label>Session Best</label><span id="best-wpm">—</span></div>
         </div>
 
-        <!-- FIX 4: Progress bar timer -->
         <div class="timer-bar-wrap">
             <div class="timer-bar-outer">
                 <div class="timer-bar-inner" id="timer-bar"></div>
@@ -257,13 +254,11 @@
         <div class="analysis-section">
             <div class="chart-box"><canvas id="speedChart"></canvas></div>
             <div class="leaderboard-box">
-                <!-- FIX 5: Leaderboard heading -->
                 <div class="leaderboard-heading">Session Best Scores</div>
                 <div id="leaderboard-list"></div>
             </div>
         </div>
 
-        <!-- FIX 1: Start hint in display area -->
         <div id="display-area"><span class="start-hint">Select your level and start typing below...</span></div>
         <textarea id="typing-box" class="type-input" placeholder="Initiate test by typing here..."></textarea>
 
@@ -283,7 +278,6 @@
                         <img src="logo.png" alt="Logo" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">
                     </a>
                 </div>
-                <!-- FIX 3: REF ID already works, kept as-is -->
                 <div class="ref-id-label">REF ID: <span id="pdf-ref-id"></span></div>
                 <div class="cert-border-decoration top-left"></div>
                 <div class="cert-border-decoration bottom-right"></div>
@@ -406,7 +400,11 @@
             }
 
             speedChart.data.labels.push(totalSeconds - timeRemaining);
-            speedChart.data.datasets[0].data.push(parseInt(document.getElementById('live-wpm').innerText) || 0);
+            
+            // ✅ FIXED BUG HERE: Checking safely for the dashboard dash character "—" before casting
+            const currentLiveWpm = document.getElementById('live-wpm').innerText;
+            speedChart.data.datasets[0].data.push(currentLiveWpm === '—' ? 0 : (parseInt(currentLiveWpm) || 0));
+            
             speedChart.update();
 
             if (timeRemaining <= 0) { clearInterval(timerRef); endTestSession(); }
@@ -513,20 +511,20 @@
 
     // FIX 5: leaderboard with rank numbers
     function updateHistory() {
-    const rankSymbols = ['🥇', '🥈', '🥉'];
-    
-    // Sort scores by WPM in descending order
-    const topScores = scores.sort((a, b) => b.wpm - a.wpm).slice(0, 5);
+        const rankSymbols = ['🥇', '🥈', '🥉'];
+        
+        // Sort scores by WPM in descending order
+        const topScores = scores.sort((a, b) => b.wpm - a.wpm).slice(0, 5);
 
-    document.getElementById('leaderboard-list').innerHTML = topScores.map((s, i) => {
-        const rank = rankSymbols[i] || `#${i + 1}`;
-        return `<div style="display:flex; align-items:center; gap:8px; padding:7px 0; border-bottom:1px solid #333;">
-            <span style="font-size:13px; min-width:22px;">${rank}</span>
-            <b style="color:var(--accent-glow); flex:1;">${s.wpm} WPM</b>
-            <span style="color:#8b949e; font-size:12px;">${s.date}</span>
-        </div>`;
-    }).join('');
-}
+        document.getElementById('leaderboard-list').innerHTML = topScores.map((s, i) => {
+            const rank = rankSymbols[i] || `#${i + 1}`;
+            return `<div style="display:flex; align-items:center; gap:8px; padding:7px 0; border-bottom:1px solid #333;">
+                <span style="font-size:13px; min-width:22px;">${rank}</span>
+                <b style="color:var(--accent-glow); flex:1;">${s.wpm} WPM</b>
+                <span style="color:#8b949e; font-size:12px;">${s.date}</span>
+            </div>`;
+        }).join('');
+    }
     initUI();
 </script>
 </body>
